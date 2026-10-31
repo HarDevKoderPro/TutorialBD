@@ -24,7 +24,12 @@ export function App() {
 
       <main className="flex flex-1 flex-col justify-center gap-10 py-16">
         <div className="flex flex-col gap-5">
-          <p className="section-label">00 · Bienvenida</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <p className="section-label">00 · Bienvenida</p>
+            <span className="rounded-full border border-amber/45 px-3 py-1 text-xs font-semibold text-amber-l">
+              Tema 1 · muy pronto
+            </span>
+          </div>
           <h1 className="text-5xl font-black tracking-[-0.02em] sm:text-6xl">
             Bases de datos con SQL desde <span className="text-cyan-l">cero</span>
           </h1>
