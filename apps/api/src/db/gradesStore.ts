@@ -25,10 +25,11 @@ export interface Override {
 const toSubmission = (row: RowDataPacket): Submission => ({
   taskId: String(row.task_id),
   attempt: Number(row.attempt),
-  answer: typeof row.answer === 'string' ? JSON.parse(row.answer) : row.answer,
+  // mysql2 ya convierte las columnas JSON (un texto guardado como JSON llega como string)
+  answer: row.answer,
   grade: row.grade === null ? null : Number(row.grade),
   justification: row.justification ?? null,
-  criteria: typeof row.criteria === 'string' ? JSON.parse(row.criteria) : (row.criteria ?? null),
+  criteria: row.criteria ?? null,
   gradedBy: row.graded_by as GradedBy,
   createdAt: String(row.created_at),
 });
