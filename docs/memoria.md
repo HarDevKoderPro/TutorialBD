@@ -19,7 +19,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 | Etapa | Estado |
 |---|---|
 | 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
-| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (aprobada) · 1.3 ejercicios (publicados, pendientes de aprobación) · 1.4 grupos y panel docente |
+| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (aprobada) · 1.3 ejercicios (publicados) · 1.4 ingreso por grupo y panel docente (publicado, pendiente de prueba del docente) |
 
 ## Estado del contenido
 | Tema | Estado |
@@ -43,6 +43,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - 2026-10-31 · **El Tema 1 no necesita el mapeo de nombres**: cada estudiante tiene una base `practica` propia y abre la consola ya dentro de ella (resuelve el `ERROR 1046` del ejemplo del Tema 1). El mapeo se implementa en la Etapa 3, antes del Tema 4 · Aun con RAM suficiente para un contenedor por estudiante, se prefiere el mapeo porque controlar Docker desde la API equivale a darle root.
 - 2026-10-31 · **Contenido en MDX con componentes en español**: las lecciones (`content/temas/*/leccion.mdx`) usan etiquetas como `<Seccion>`, `<AnatomiaTabla>`, `<DiagramaClaves>` que la app mapea a sus componentes (`apps/web/src/lesson/mdxComponents.tsx`); los datos de cada diagrama van como props en el MDX. La ruta vive en `content/ruta.yaml` y se valida con zod · Contenido editable sin tocar código.
 - 2026-10-31 · **Consola v0 con sesión anónima por navegador**: un UUID en localStorage deriva (con `SBX_SESSION_SECRET`) el usuario MySQL `u_<id>` y la base `sbx_<id>_practica`; el estudiante solo tiene privilegios de datos/DDL sobre esa base. Al llegar el ingreso por grupo (1.4) el sandbox se asociará al estudiante · Permite usar la consola desde ya sin cuentas.
+- 2026-10-31 · **Cuentas y grupos**: el docente se crea por CLI en el VPS; crea grupos con código de 6 caracteres; el estudiante se registra con código, nombre, usuario y contraseña (sin correo ni documento: datos mínimos). Contraseñas con scrypt (incluido en Node, sin dependencias nativas; equivalente a argon2/bcrypt). Sesión con cookie httpOnly de 30 días. Toda la app (salvo /ingresar) requiere sesión. El sandbox de la consola pasa a ser de la cuenta (`user:<id>`), no del navegador · Spec §1 y criterio de la Fase 1.
 - 2026-10-31 · React Router 7 (no 8: exige React 19).
 - 2026-10-31 · Versiones: React 18.3, Vite 8, Tailwind 4, TypeScript 6.0 (no 7: typescript-eslint aún no lo soporta), Fastify 5, mysql2 3, Vitest 5, Node 22. Fuentes Inter y JetBrains Mono autoalojadas (`@fontsource`), sin CDN externo.
 
@@ -54,7 +55,6 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 ## Contenido redactado por Claude (pendiente de aprobación del docente)
 - Tema 1, `ejercicios.yaml`: pistas de T1-B1, T1-B2 y T1-I2; respuesta de referencia de ejemplo de T1-I1 (el temario no la trae); primera frase de la referencia de T1-A1 (qué se repite y por qué es un problema); rúbricas de T1-I1 y T1-A1.
 - `content/errores.yaml`: explicaciones de los 20 errores del catálogo.
-- Avance de ejercicios guardado por ahora en el navegador (localStorage); se sincronizará con el servidor en la entrega 1.4.
 
 ## Pendientes / preguntas abiertas
 - Aislamiento de la consola: mapeo de nombres vs. contenedor por estudiante (Etapa 3).

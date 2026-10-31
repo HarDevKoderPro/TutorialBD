@@ -46,6 +46,8 @@ _(mantener esta sección actualizada)_
 - `npm run dev:web` / `npm run dev:api` — desarrollo (la web redirige `/api` a `localhost:3000`)
 - `npm run typecheck` · `npm run lint` · `npm test` · `npm run build` — lo mismo que ejecuta la CI
 - `docker compose up -d --build` — web + API + `mysql-app` + `mysql-sbx` (requiere `.env`, ver `.env.example`, y la red externa `proxy`)
+- `docker compose exec api node dist/cli.js crear-docente` — crea una cuenta de docente (interactivo; en el VPS, desde /opt/apps/tutorialbd)
+- Pruebas de integración contra MySQL: se activan con `TEST_DB_HOST` (en CI hay un servicio mysql:8.4)
 - `npm run test:ejercicios` — _(pendiente, Etapa 3)_ ejecuta todas las soluciones de `content/` contra MySQL
 
 ## Despliegue
