@@ -19,7 +19,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 | Etapa | Estado |
 |---|---|
 | 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
-| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada, pendiente de aprobación) · 1.2 consola · 1.3 ejercicios · 1.4 grupos y panel docente |
+| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (publicada, probada en producción) · 1.3 ejercicios · 1.4 grupos y panel docente |
 
 ## Estado del contenido
 | Tema | Estado |
@@ -42,6 +42,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - 2026-10-31 · **Dos MySQL 8.4 separados**: `mysql-app` (`aula_app`) y `mysql-sbx` (sandboxes) en red interna, con límites de memoria/CPU (sandbox: 2 GB / 2 CPU) · Un estudiante no puede afectar los datos de la app ni a los otros proyectos del VPS. La API usa `sbx_admin` (sin acceso root) para aprovisionar.
 - 2026-10-31 · **El Tema 1 no necesita el mapeo de nombres**: cada estudiante tiene una base `practica` propia y abre la consola ya dentro de ella (resuelve el `ERROR 1046` del ejemplo del Tema 1). El mapeo se implementa en la Etapa 3, antes del Tema 4 · Aun con RAM suficiente para un contenedor por estudiante, se prefiere el mapeo porque controlar Docker desde la API equivale a darle root.
 - 2026-10-31 · **Contenido en MDX con componentes en español**: las lecciones (`content/temas/*/leccion.mdx`) usan etiquetas como `<Seccion>`, `<AnatomiaTabla>`, `<DiagramaClaves>` que la app mapea a sus componentes (`apps/web/src/lesson/mdxComponents.tsx`); los datos de cada diagrama van como props en el MDX. La ruta vive en `content/ruta.yaml` y se valida con zod · Contenido editable sin tocar código.
+- 2026-10-31 · **Consola v0 con sesión anónima por navegador**: un UUID en localStorage deriva (con `SBX_SESSION_SECRET`) el usuario MySQL `u_<id>` y la base `sbx_<id>_practica`; el estudiante solo tiene privilegios de datos/DDL sobre esa base. Al llegar el ingreso por grupo (1.4) el sandbox se asociará al estudiante · Permite usar la consola desde ya sin cuentas.
 - 2026-10-31 · React Router 7 (no 8: exige React 19).
 - 2026-10-31 · Versiones: React 18.3, Vite 8, Tailwind 4, TypeScript 6.0 (no 7: typescript-eslint aún no lo soporta), Fastify 5, mysql2 3, Vitest 5, Node 22. Fuentes Inter y JetBrains Mono autoalojadas (`@fontsource`), sin CDN externo.
 
@@ -55,5 +56,6 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - Repositorio `HarDevKoderPro/TutorialBD` es público: decidir si pasa a privado antes de subir `proyecto-final/referencia`.
 - ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`)?
 - Copia cifrada de respaldos con rclone (remoto `tutorialbd-crypt:`).
+- Limpieza automática de sandboxes sin uso (usuarios `u_*` y bases `sbx_*` de sesiones abandonadas).
 - ¿El proyecto final permite dominios distintos a TecnoTienda?
 - ¿Pesos de la rúbrica y relación con la calificación formal?
