@@ -85,7 +85,25 @@ body {
   }
 }
 
+/* Punto que recorre las flechas del diagrama App → SGBD → BD */
+@keyframes flow-forward {
+  from { left: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  to { left: calc(100% - 0.5rem); opacity: 0; }
+}
+@keyframes flow-back {
+  from { left: calc(100% - 0.5rem); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  to { left: 0; opacity: 0; }
+}
+.flow-dot-forward { animation: flow-forward 2.4s ease-in-out infinite; }
+.flow-dot-back { animation: flow-back 2.4s ease-in-out 1.2s infinite; }
+
 @media (prefers-reduced-motion: reduce) {
+  .flow-dot { display: none; }
+
   *,
   *::before,
   *::after {

@@ -6,6 +6,7 @@ COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 RUN npm ci -w apps/web --include-workspace-root
 COPY apps/web apps/web
+COPY content content
 
 ARG GIT_COMMIT=dev
 ARG BUILD_DATE=

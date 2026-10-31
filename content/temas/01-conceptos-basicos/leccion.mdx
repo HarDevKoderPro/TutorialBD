@@ -1,0 +1,133 @@
+---
+numero: 1
+titulo: Conceptos básicos
+resumen: "Antes de escribir SQL: qué es una base de datos, quién la administra y cómo se organiza por dentro."
+temas: [Dato e información, SGBD, Tabla · campo · registro, Tipos de dato, Claves PK y FK]
+---
+
+<Seccion id="dato-informacion" etiqueta="Dato e información" titulo={<>De un dato suelto a una <Clave>base de datos</Clave></>}>
+
+<Pasos>
+  <Paso etiqueta="Dato" color="cyan" muestra="3001234567">
+    Un valor aislado. Por sí solo no dice nada: ¿es un teléfono, un código, una cuenta?
+  </Paso>
+  <Paso etiqueta="Información" color="violet" muestra="El teléfono de Laura es 3001234567">
+    Datos con contexto, que permiten tomar decisiones.
+  </Paso>
+  <Paso etiqueta="Base de datos" color="green" muestra="Datos relacionados y organizados sobre un mismo tema">
+    Guardados para consultarlos rápido y sin errores.
+  </Paso>
+</Pasos>
+
+<Ejemplos titulo="¿Dónde hay bases de datos?">
+  <Ejemplo nombre="Plataforma académica" detalle="estudiantes · grupos · notas" />
+  <Ejemplo nombre="Nequi" detalle="usuarios · saldos · movimientos" />
+  <Ejemplo nombre="Contactos del celular" detalle="nombre · número · correo" />
+</Ejemplos>
+
+</Seccion>
+
+<Seccion id="sgbd" etiqueta="El SGBD" titulo={<>El <Clave color="violet">SGBD</Clave>: quien administra los datos</>}>
+
+<FlujoSGBD
+  aplicacion={{ nombre: 'Aplicación', detalle: 'web · móvil · escritorio' }}
+  sgbd={{ nombre: 'SGBD', detalle: 'valida · ejecuta · protege' }}
+  base="Base de datos"
+  ida="SQL"
+  vuelta="resultados"
+  acceso="lee / escribe"
+/>
+
+<Nota tipo="clave">
+  La aplicación **nunca toca los datos directamente**: siempre le pide al SGBD con instrucciones SQL.
+</Nota>
+
+<Chips etiqueta="SGBD más usados" items={['MySQL', 'MariaDB', 'PostgreSQL', 'SQL Server']} destacado="MySQL" nota="el nuestro" />
+
+</Seccion>
+
+<Seccion id="anatomia-tabla" etiqueta="Tabla · campo · registro" titulo={<>Anatomía de una <Clave color="pink">tabla</Clave></>}>
+
+<AnatomiaTabla
+  nombre="clientes"
+  columnas={['id_cliente', 'nombre', 'ciudad', 'telefono']}
+  filas={[
+    ['1', 'Laura Gómez', 'Bogotá', '3001234567'],
+    ['2', 'Andrés Ruiz', 'Medellín', '3109876543'],
+    ['3', 'Camila Torres', 'Cali', '3205551234'],
+  ]}
+  campo={2}
+  registro={1}
+  partes={[
+    { parte: 'tabla', nombre: 'Tabla', texto: 'Agrupa los datos de un mismo tipo de cosa: clientes, productos, pedidos.' },
+    { parte: 'campo', nombre: 'Campo', texto: 'Una columna. Es una característica: nombre, ciudad, teléfono.' },
+    { parte: 'registro', nombre: 'Registro', texto: 'Una fila. Un elemento completo: un cliente con todos sus datos.' },
+    { parte: 'valor', nombre: 'Valor', texto: 'El dato en el cruce de un campo y un registro: «Medellín».' },
+  ]}
+/>
+
+</Seccion>
+
+<Seccion id="tipos-dato" etiqueta="Tipos de dato" titulo={<>Cada campo tiene un <Clave color="amber">tipo de dato</Clave></>}>
+
+<TiposDato
+  tipos={[
+    { tipo: 'INT', descripcion: 'Número entero', ejemplo: 'id_cliente = 3' },
+    { tipo: 'DECIMAL', descripcion: 'Número con decimales', ejemplo: 'precio = 89900.50' },
+    { tipo: 'VARCHAR', descripcion: 'Texto', ejemplo: "nombre = 'Laura'" },
+    { tipo: 'DATE', descripcion: 'Fecha', ejemplo: "'2026-01-15'" },
+    { tipo: 'BOOLEAN', descripcion: 'Verdadero / falso', ejemplo: 'activo = TRUE' },
+  ]}
+/>
+
+</Seccion>
+
+<Seccion id="claves" etiqueta="Claves PK y FK" titulo={<>Las <Clave color="green">claves</Clave> identifican y unen</>}>
+
+<DiagramaClaves
+  padre={{ nombre: 'clientes', pk: 'id_cliente', campos: ['nombre', 'ciudad'] }}
+  hija={{ nombre: 'pedidos', pk: 'id_pedido', campos: ['fecha'], fk: 'id_cliente' }}
+  relacion="apunta a"
+  pk={{ nombre: 'PK · clave primaria', texto: 'Identifica cada registro. No se repite.' }}
+  fk={{ nombre: 'FK · clave foránea', texto: 'Apunta a la PK de otra tabla y las une.' }}
+  analogia="Como el número de documento: no hay dos personas con el mismo."
+/>
+
+</Seccion>
+
+<Seccion id="primer-contacto" etiqueta="Práctica" titulo={<>Primer contacto con la <Clave>consola</Clave></>}>
+
+Por ahora solo pega y observa: la sintaxis la explicamos en los próximos temas.
+
+```sql
+CREATE TABLE clientes (
+  id_cliente INT PRIMARY KEY,
+  nombre VARCHAR(50),
+  ciudad VARCHAR(40),
+  telefono VARCHAR(15),
+  fecha_registro DATE
+);
+INSERT INTO clientes VALUES
+(1, 'Laura Gómez', 'Bogotá', '3001234567', '2026-01-15'),
+(2, 'Andrés Ruiz', 'Medellín', '3109876543', '2026-02-03'),
+(3, 'Camila Torres', 'Cali', '3205551234', '2026-02-20');
+SELECT * FROM clientes;
+```
+
+<Nota tipo="error" titulo="Error provocado">
+  Ahora intenta registrar otro cliente con el `id_cliente` 1. ¿Por qué crees que el SGBD lo rechaza?
+</Nota>
+
+```sql
+INSERT INTO clientes VALUES (1, 'Pedro Díaz', 'Pasto', '3150000000', '2026-03-01');
+```
+
+<Proximamente>La consola para ejecutar estos ejemplos llega en la próxima entrega.</Proximamente>
+
+</Seccion>
+
+<Seccion id="ejercicios" etiqueta="Ejercicios" titulo={<>Practica lo <Clave color="green">visto</Clave></>}>
+
+<Proximamente>Los ejercicios del Tema 1, con retroalimentación inmediata, llegan en una próxima entrega.</Proximamente>
+
+</Seccion>

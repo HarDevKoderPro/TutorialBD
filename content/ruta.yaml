@@ -1,0 +1,69 @@
+# Ruta del curso. Un tema pasa a "disponible" cuando está terminado y el docente lo aprueba.
+# bloque: diseno | estructura | crud | avanzadas | integracion
+temas:
+  - numero: 1
+    slug: 01-conceptos-basicos
+    titulo: Conceptos básicos
+    resumen: BD · tabla · claves
+    bloque: diseno
+    estado: disponible
+  - numero: 2
+    slug: 02-modelo-entidad-relacion
+    titulo: Modelo entidad-relación
+    resumen: DER del caso
+    bloque: diseno
+    estado: proximamente
+  - numero: 3
+    slug: 03-normalizacion
+    titulo: Normalización
+    resumen: 1FN · 2FN · 3FN
+    bloque: diseno
+    estado: proximamente
+  - numero: 4
+    slug: 04-crear-la-estructura
+    titulo: Crear la estructura
+    resumen: CREATE · ALTER
+    bloque: estructura
+    estado: proximamente
+  - numero: 5
+    slug: 05-insertar-datos
+    titulo: Insertar datos
+    resumen: INSERT
+    bloque: crud
+    estado: proximamente
+  - numero: 6
+    slug: 06-consultar-datos
+    titulo: Consultar datos
+    resumen: SELECT · WHERE
+    bloque: crud
+    estado: proximamente
+  - numero: 7
+    slug: 07-modificar-y-eliminar
+    titulo: Modificar y eliminar
+    resumen: UPDATE · DELETE
+    bloque: crud
+    estado: proximamente
+  - numero: 8
+    slug: 08-consultas-entre-tablas
+    titulo: Consultas entre tablas
+    resumen: JOIN
+    bloque: avanzadas
+    estado: proximamente
+  - numero: 9
+    slug: 09-resumenes-y-reportes
+    titulo: Resúmenes y reportes
+    resumen: GROUP BY
+    bloque: avanzadas
+    estado: proximamente
+  - numero: 10
+    slug: 10-sql-desde-la-aplicacion
+    titulo: SQL desde la aplicación
+    resumen: Parametrizadas · inyección
+    bloque: avanzadas
+    estado: proximamente
+  - numero: 11
+    slug: proyecto-final
+    titulo: Proyecto final
+    resumen: CRUD completo
+    bloque: integracion
+    estado: proximamente
