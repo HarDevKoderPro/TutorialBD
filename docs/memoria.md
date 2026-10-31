@@ -15,6 +15,12 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - 2026-10-31 · **La app es un producto propio y de uso general, sin vínculo con el SENA**: no se menciona el SENA en la interfaz ni en el contenido · Decisión del autor. Vocabulario general: *docente, estudiante, grupo, aula, entregable* (reemplaza instructor, aprendiz, ficha, ambiente, evidencia).
 - 2026-10-30 · La app debe incluir una **consola para practicar SQL como en un entorno real** y terminar con un **proyecto CRUD completo** desde el diseño hasta el frontend.
 
+## Estado de las etapas
+| Etapa | Estado |
+|---|---|
+| 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
+| 1 · Versión Clase 1 | Siguiente |
+
 ## Estado del contenido
 | Tema | Estado |
 |---|---|
