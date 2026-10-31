@@ -1,0 +1,86 @@
+name: CI y despliegue
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Verificar (tipos, lint, pruebas, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    name: Desplegar en el VPS
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: vps
+      url: https://sql.smarteksoft.com
+    steps:
+      # Mientras no estén los secretos del VPS, el despliegue se omite sin fallar
+      - name: 🔎 Revisar secretos
+        id: secrets
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -n "$VPS_HOST" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Faltan los secretos del VPS; se omite el despliegue"
+          fi
+
+      - name: 🔑 Configurar SSH
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: 🚀 Desplegar
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        # La llave tiene comando forzado en el VPS: ejecuta scripts/deploy.sh
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$VPS_USER@$VPS_HOST" deploy
+
+      - name: ✅ Verificar sitio público
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          set -e
+          esperado="${GITHUB_SHA::7}"
+          curl -fsS --max-time 15 --retry 5 --retry-all-errors https://sql.smarteksoft.com/ -o /dev/null
+          salud="$(curl -fsS --max-time 15 --retry 5 --retry-all-errors https://sql.smarteksoft.com/api/health)"
+          echo "$salud"
+          echo "$salud" | grep -q "\"commit\":\"$esperado\""
+          echo "Sitio publicado con el commit $esperado"
+
+      - name: 🧹 Limpiar llave
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

@@ -1,0 +1,6 @@
+# Servidor de sandboxes de aprendices (consola SQL)
+[mysqld]
+innodb_buffer_pool_size = 512M
+max_connections = 200
+# Tiempo máximo por SELECT: 5 s (docs/consola-sql.md §6)
+max_execution_time = 5000

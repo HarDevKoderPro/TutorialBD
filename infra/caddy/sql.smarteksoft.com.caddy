@@ -1,0 +1,19 @@
+# Bloque que se agrega a /opt/caddy/Caddyfile para publicar TutorialBD.
+# Recargar sin cortar los demás sitios:
+#   docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+sql.smarteksoft.com {
+    encode zstd gzip
+
+    # API y consola (WebSocket)
+    handle /api/* {
+        reverse_proxy tutorialbd-api-1:3000
+    }
+    handle /ws/* {
+        reverse_proxy tutorialbd-api-1:3000
+    }
+
+    # Frontend
+    handle {
+        reverse_proxy tutorialbd-web-1:80
+    }
+}

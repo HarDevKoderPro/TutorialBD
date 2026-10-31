@@ -1,45 +1,51 @@
-# Plan de implementación por fases
+# Plan de implementación por etapas
 
-Cada fase termina con algo usable y con sus criterios de aceptación cumplidos. Al cerrar una fase: actualizar `docs/memoria.md` (decisiones y estado) y mostrar al instructor el resultado antes de continuar.
+> **Reorganizado el 2026-10-31** (ver `memoria.md`): primero una versión usable para la Clase 1 publicada en el VPS, y luego un tema por delante del grupo, en el orden del curso. El plan original por fases (0–7) quedó absorbido en estas etapas.
 
-## Fase 0 · Spike técnico de la consola (decisión de arquitectura)
-- `docker compose` con MySQL 8.4 + API mínima + página con xterm.js.
-- Probar el mapeo de nombres lógicos ↔ físicos por aprendiz (ver `consola-sql.md` §2) con 2 usuarios simultáneos creando `tecnotienda`.
-- Medir RAM/CPU con 35 sesiones simuladas.
-- **Aceptación:** dos aprendices ejecutan el script completo de TecnoTienda con los mismos nombres sin interferir; `SHOW DATABASES`, `USE`, errores y `SHOW CREATE TABLE` muestran nombres lógicos; decisión registrada en `memoria.md` (mapeo vs. contenedor por aprendiz).
+Cada etapa termina con algo usable, publicado en https://sql.smarteksoft.com y con sus criterios de aceptación cumplidos. Al cerrar una etapa: actualizar `docs/memoria.md` (decisiones y estado) y mostrar al instructor el resultado antes de continuar.
 
-## Fase 1 · Base del proyecto
-- Monorepo (`apps/web`, `apps/api`, `content/`, `proyecto-final/`, `infra/`).
-- Sistema de diseño con los tokens de `identidad-visual.md`; layout, navegación, ruta de aprendizaje.
-- Autenticación simple (fichas con código de ingreso), roles aprendiz/instructor.
-- Cargador de contenido (`content/temas/*/leccion.mdx`, `ejercicios.yaml`, `content/errores.yaml`) con validación de esquema.
-- **Aceptación:** un aprendiz se registra con código de ficha, ve la ruta y abre una lección de ejemplo; el instructor ve la lista de su ficha.
+## Etapa 0 · Base y despliegue continuo
+- Monorepo (`apps/web`, `apps/api`, `infra/`, `scripts/`), tokens de `identidad-visual.md` en Tailwind.
+- `compose.yml` con web, API, `mysql-app` y `mysql-sbx` (MySQL 8.4, con límites de memoria/CPU), integrado a la estructura del VPS (`/opt/apps/tutorialbd`, Caddy, red `proxy`).
+- GitHub Actions: tipos, lint, pruebas y build → despliegue por SSH con llave de comando forzado → `scripts/deploy.sh` (verificación del commit y rollback) → verificación pública.
+- **Aceptación:** un push a `main` se publica solo; al refrescar la página se ve el commit nuevo en el pie; si la verificación falla, el VPS vuelve al commit anterior.
 
-## Fase 2 · Consola SQL completa
-- Todo lo de `consola-sql.md`: terminal tipo `mysql`, explorador de esquema, modo editor, explicación de errores, restaurar punto de partida, «mi script», límites y seguridad.
-- **Aceptación:** se pueden ejecutar, desde el navegador, todos los ejemplos y errores provocados de `temario.md` con salida idéntica en formato al cliente `mysql`; las sentencias bloqueadas se rechazan; `Ctrl+C` cancela una consulta larga.
+## Etapa 1 · Versión Clase 1 (Tema 1)
+- Ingreso con código de ficha (aprendiz) y cuenta de instructor; ruta del curso con el Tema 1 activo.
+- Cargador de contenido (`content/temas/01-.../leccion.mdx`, `ejercicios.yaml`, `content/errores.yaml`) con validación de esquema.
+- Lección del Tema 1 con diagramas propios (dato/información, App→SGBD→BD, anatomía de tabla, PK/FK) y bloques predice → ejecuta → explica.
+- Consola v0 (xterm.js) con formato del cliente `mysql`, una base `practica` por aprendiz, reinicio, historial, bloqueos y límites de `consola-sql.md` §6, tarjetas de error en español.
+- Ejercicios T1 (selección con calificación inmediata; abiertos con rúbrica y referencia); mini-quiz (redactado y aprobado por el instructor).
+- Instructor: crear ficha, ver aprendices y avance, leer respuestas abiertas, modo proyección.
+- Copias de seguridad diarias de `aula_app`; prueba de carga de 35 consolas en el VPS.
+- **Aceptación:** un aprendiz entra con el código de ficha, recorre la lección, ejecuta el script del Tema 1 y provoca el error 1062 con la salida idéntica al cliente `mysql`; el instructor ve su avance.
 
-## Fase 3 · Motor de ejercicios + temas SQL núcleo (1, 4, 5, 6)
+## Etapa 2 · Temas 2 y 3 (versión ligera)
+- Lecciones, DER en código Mermaid con vista previa, planilla interactiva, ejercicios `manual` con rúbrica.
+- **Aceptación:** el aprendiz escribe el DER de TecnoTienda y lo compara con la referencia; recorre la planilla hasta 3FN.
+
+## Etapa 3 · Consola completa y motor de ejercicios (antes del Tema 4)
+- Aislamiento con nombres lógicos ↔ físicos (`consola-sql.md` §2): prueba con 2 aprendices creando `tecnotienda` y decisión registrada (mapeo vs. contenedor por aprendiz).
+- Explorador de esquema, modo editor, restaurar punto de partida, «mi script», `Ctrl+C`.
 - Validadores `resultado`, `estructura`, `estado`, `error`, `manual`, con base temporal por intento.
-- Lecciones y ejercicios de los temas 1, 4, 5 y 6 con sus bloques interactivos.
+- **Aceptación:** dos aprendices ejecutan el script completo de TecnoTienda con los mismos nombres sin interferir; `SHOW DATABASES`, `USE`, errores y `SHOW CREATE TABLE/VIEW` muestran nombres lógicos; las sentencias bloqueadas se rechazan.
+
+## Etapa 4 · Temas 4, 5 y 6
 - **Aceptación:** pruebas automáticas que ejecutan cada solución de `temario.md` y la marcan como correcta, y una variante incorrecta que se marca como incorrecta.
 
-## Fase 4 · Temas 7, 8 y 9
+## Etapa 5 · Temas 7, 8 y 9
 - Transacciones en la consola, diagrama de Venn con filas reales, animación de `GROUP BY`, vistas.
-- **Aceptación:** igual que la Fase 3 para estos temas.
+- **Aceptación:** igual que la Etapa 4 para estos temas.
 
-## Fase 5 · Diseño: temas 2 y 3
-- Editor de DER (visual + Mermaid), generación de `CREATE TABLE`, laboratorio de normalización.
-- **Aceptación:** el aprendiz dibuja el DER de TecnoTienda, lo compara con la referencia y genera el DDL; completa la planilla hasta 3FN.
-
-## Fase 6 · Tema 10 y proyecto final
+## Etapa 6 · Tema 10 y proyecto final
 - Laboratorio de inyección SQL aislado.
 - `proyecto-final/referencia` (funcional, con pruebas) y `proyecto-final/plantilla` (con TODO por etapa).
-- Módulo guiado del proyecto en la app con verificación automática de las etapas 3 y 4.
+- Módulo guiado del proyecto con verificación automática de las etapas 3 y 4.
 - **Aceptación:** la referencia arranca con `npm install && npm start` contra el MySQL del sandbox y cumple toda la tabla de API de `proyecto-final-crud.md`; la plantilla arranca sin errores aunque falten los TODO.
 
-## Fase 7 · Panel del instructor, pulido y despliegue
-- Progreso, mapa de calor, errores frecuentes, exportar CSV, modo proyección.
-- Pruebas e2e (Playwright) del recorrido aprendiz e instructor; prueba de carga de 35 consolas.
-- Guía de despliegue (`infra/README.md`): servidor del centro / VPS / portátil del instructor en red local; copias de seguridad.
+## Etapa 7 · Pulido (en paralelo, sin bloquear clases)
+- Editor visual de DER (React Flow) y laboratorio de normalización completo.
+- Panel del instructor completo: mapa de calor, errores frecuentes, exportar CSV.
+- Pruebas e2e (Playwright) del recorrido aprendiz e instructor.
+- Guía de despliegue (`infra/README.md`) para otros entornos (servidor del centro, portátil en red local).
 - **Aceptación:** checklist de requisitos no funcionales de `especificacion-app.md` §3.

@@ -1,0 +1,108 @@
+# TutorialBD · servicios en el VPS (/opt/apps/tutorialbd)
+# Caddy (en /opt/caddy) publica web y api por la red externa "proxy";
+# las bases de datos solo viven en la red interna, sin salida a internet.
+name: tutorialbd
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        GIT_COMMIT: ${GIT_COMMIT:-dev}
+        BUILD_DATE: ${BUILD_DATE:-}
+    restart: unless-stopped
+    networks: [proxy]
+    deploy:
+      resources:
+        limits: { memory: 64m, cpus: '0.5' }
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      args:
+        GIT_COMMIT: ${GIT_COMMIT:-dev}
+        BUILD_DATE: ${BUILD_DATE:-}
+    restart: unless-stopped
+    environment:
+      TZ: America/Bogota
+      APP_DB_HOST: mysql-app
+      APP_DB_NAME: aula_app
+      APP_DB_USER: ${APP_DB_USER}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      SBX_DB_HOST: mysql-sbx
+      SBX_ADMIN_USER: ${SBX_ADMIN_USER}
+      SBX_ADMIN_PASSWORD: ${SBX_ADMIN_PASSWORD}
+    depends_on:
+      mysql-app: { condition: service_healthy }
+      mysql-sbx: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks: [internal, proxy]
+    deploy:
+      resources:
+        limits: { memory: 512m, cpus: '1' }
+
+  # Datos de la app: usuarios, fichas, progreso
+  mysql-app:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      TZ: America/Bogota
+      MYSQL_ROOT_PASSWORD: ${MYSQL_APP_ROOT_PASSWORD}
+      MYSQL_DATABASE: aula_app
+      MYSQL_USER: ${APP_DB_USER}
+      MYSQL_PASSWORD: ${APP_DB_PASSWORD}
+    volumes:
+      - mysql_app_data:/var/lib/mysql
+      - ./infra/mysql/common.cnf:/etc/mysql/conf.d/common.cnf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks: [internal]
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: '1' }
+
+  # Sandboxes de los aprendices (consola SQL); limitado para no afectar a otros proyectos del VPS
+  mysql-sbx:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      TZ: America/Bogota
+      MYSQL_ROOT_PASSWORD: ${MYSQL_SBX_ROOT_PASSWORD}
+      SBX_ADMIN_USER: ${SBX_ADMIN_USER}
+      SBX_ADMIN_PASSWORD: ${SBX_ADMIN_PASSWORD}
+    volumes:
+      - mysql_sbx_data:/var/lib/mysql
+      - ./infra/mysql/common.cnf:/etc/mysql/conf.d/common.cnf:ro
+      - ./infra/mysql/sandbox.cnf:/etc/mysql/conf.d/sandbox.cnf:ro
+      - ./infra/mysql/sbx-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks: [internal]
+    deploy:
+      resources:
+        limits: { memory: 2g, cpus: '2' }
+
+networks:
+  internal:
+    internal: true
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  mysql_app_data:
+  mysql_sbx_data:

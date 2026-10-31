@@ -29,10 +29,22 @@ Registro vivo de decisiones, estado y acuerdos con el instructor. **Claude Code 
 - Respuestas y contenidos en español.
 
 ## Decisiones técnicas
-_(vacío — registrar aquí la decisión de la Fase 0 sobre aislamiento de la consola y cualquier otra decisión de arquitectura)_
+- 2026-10-31 · **Plan reorganizado en etapas** (`plan-implementacion.md`): primero la versión Clase 1 publicada, luego un tema por delante del grupo en el orden del curso (temas 2–3 antes que 4) · Tener algo útil en clase cuanto antes; el plan original ponía DER/normalización después de los temas 7–9.
+- 2026-10-31 · **Despliegue en el VPS Contabo del instructor**, en https://sql.smarteksoft.com, siguiendo su patrón de proyectos: `/opt/apps/tutorialbd` (clon de `main`), Caddy compartido en `/opt/caddy` con la red externa `proxy`, `scripts/deploy.sh` como comando forzado de una llave SSH dedicada, verificación del commit publicado y rollback automático · Consistencia con los demás proyectos del VPS.
+- 2026-10-31 · **CI antes de desplegar**: GitHub Actions ejecuta tipos, lint, pruebas y build; solo si pasan se despliega. Las imágenes se construyen en el VPS (como los demás proyectos) · El VPS tiene 8 vCPU / 23 GB.
+- 2026-10-31 · **Dos MySQL 8.4 separados**: `mysql-app` (`aula_app`) y `mysql-sbx` (sandboxes) en red interna, con límites de memoria/CPU (sandbox: 2 GB / 2 CPU) · Un aprendiz no puede afectar los datos de la app ni a los otros proyectos del VPS. La API usa `sbx_admin` (sin acceso root) para aprovisionar.
+- 2026-10-31 · **La Clase 1 no necesita el mapeo de nombres**: cada aprendiz tiene una base `practica` propia y abre la consola ya dentro de ella (resuelve el `ERROR 1046` del ejemplo del Tema 1). El mapeo se implementa en la Etapa 3, antes del Tema 4 · Aun con RAM suficiente para un contenedor por aprendiz, se prefiere el mapeo porque controlar Docker desde la API equivale a darle root.
+- 2026-10-31 · Versiones: React 18.3, Vite 8, Tailwind 4, TypeScript 6.0 (no 7: typescript-eslint aún no lo soporta), Fastify 5, mysql2 3, Vitest 5, Node 22. Fuentes Inter y JetBrains Mono autoalojadas (`@fontsource`), sin CDN externo.
+
+## Errores detectados en la documentación (pendientes de aprobación)
+- Tema 7: `UPDATE productos SET precio = 0;` "sin safe updates" no produce el desastre esperado: `chk_productos_precio` lo rechaza con 3819. Propuesta: usar `UPDATE productos SET stock = 0;`.
+- Tema 3: el caso base dice que Laura Gómez tiene 3 pedidos en la planilla, pero el CSV tiene 2; y la 3FN se explica con la descripción de la categoría, columna que la planilla no tiene. Propuesta: agregar la fila del pedido 10 y la columna `descripcion_categoria`.
+- Tema 1: el primer script no tiene `USE` (daría 1046) y su `clientes` difiere de la de TecnoTienda. Resuelto por diseño: la consola del Tema 1 abre en la base `practica`.
 
 ## Pendientes / preguntas abiertas
-- Aislamiento de la consola: mapeo de nombres vs. contenedor por aprendiz (Fase 0).
-- ¿Dónde se desplegará? (servidor del centro, VPS, portátil del instructor en red local).
+- Aislamiento de la consola: mapeo de nombres vs. contenedor por aprendiz (Etapa 3).
+- Repositorio `HarDevKoderPro/TutorialBD` es público: decidir si pasa a privado antes de subir `proyecto-final/referencia`.
+- ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`) antes de la primera clase?
+- Copia cifrada de respaldos con rclone (remoto `tutorialbd-crypt:`).
 - ¿El proyecto final permite dominios distintos a TecnoTienda?
 - ¿Pesos de la rúbrica y relación con las evidencias formales?

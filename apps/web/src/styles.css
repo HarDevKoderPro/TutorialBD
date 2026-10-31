@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* Tokens de docs/identidad-visual.md expuestos como utilidades de Tailwind */
+@theme {
+  --color-bg: #070b1a;
+  --color-bg-elev: #0f1734;
+  --color-bg-code: #050915;
+
+  --color-text: #eef2ff;
+  --color-text-2: #9aa6c8;
+  --color-text-3: #5c6890;
+
+  --color-cyan: #22d3ee;
+  --color-cyan-l: #67e8f9;
+  --color-violet: #a78bfa;
+  --color-violet-l: #c4b5fd;
+  --color-pink: #f472b6;
+  --color-pink-l: #f9a8d4;
+  --color-amber: #fbbf24;
+  --color-amber-l: #fcd34d;
+  --color-green: #34d399;
+  --color-green-l: #6ee7b7;
+  --color-coral: #fb7185;
+  --color-coral-l: #fda4af;
+  --color-neon-ok: #5effb1;
+
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'DejaVu Sans Mono', monospace;
+
+  --radius-card: 18px;
+  --radius-device: 32px;
+}
+
+:root {
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --glow-violet: rgba(167, 139, 250, 0.22);
+  --glow-cyan: rgba(34, 211, 238, 0.18);
+  --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  --card-border: 1px solid rgba(255, 255, 255, 0.1);
+  color-scheme: dark;
+}
+
+/* Fondo: resplandor violeta arriba-derecha, cian abajo-izquierda y cuadrícula de 40 px */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(60rem 40rem at 100% 0%, var(--glow-violet), transparent 60%),
+    radial-gradient(50rem 36rem at 0% 100%, var(--glow-cyan), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: auto, auto, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--radius-card);
+  }
+
+  /* Etiqueta de sección: línea cian→violeta + texto en mayúsculas */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-cyan);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .section-label::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-cyan), var(--color-violet));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

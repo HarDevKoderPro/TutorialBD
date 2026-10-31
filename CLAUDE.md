@@ -41,11 +41,16 @@ docs/                # documentación de este traspaso (fuente de verdad)
 ```
 
 ## Comandos
-_(completar cuando existan; mantener esta sección actualizada)_
-- `docker compose up -d` — MySQL + API + web
-- `npm run dev` — desarrollo
-- `npm test` — pruebas
-- `npm run test:ejercicios` — ejecuta todas las soluciones de `content/` contra MySQL y verifica que validan
+_(mantener esta sección actualizada)_
+- `npm install` — dependencias de todo el monorepo (workspaces `apps/api`, `apps/web`)
+- `npm run dev:web` / `npm run dev:api` — desarrollo (la web redirige `/api` a `localhost:3000`)
+- `npm run typecheck` · `npm run lint` · `npm test` · `npm run build` — lo mismo que ejecuta la CI
+- `docker compose up -d --build` — web + API + `mysql-app` + `mysql-sbx` (requiere `.env`, ver `.env.example`, y la red externa `proxy`)
+- `npm run test:ejercicios` — _(pendiente, Etapa 3)_ ejecuta todas las soluciones de `content/` contra MySQL
+
+## Despliegue
+- Push a `main` → GitHub Actions (`.github/workflows/deploy.yml`) verifica y despliega en el VPS → https://sql.smarteksoft.com. El pie de página muestra el commit publicado.
+- En el VPS: `/opt/apps/tutorialbd`, `scripts/deploy.sh` (comando forzado de la llave de Actions), bloque de Caddy en `infra/caddy/`.
 
 ## Reglas del proyecto
 1. **Idioma:** interfaz, contenido, mensajes de error y commits en español de Colombia. Código de `apps/` con identificadores en inglés y comentarios en español; código de `proyecto-final/` con identificadores y comentarios en español (es material de aprendizaje).

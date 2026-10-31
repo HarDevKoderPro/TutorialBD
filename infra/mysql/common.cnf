@@ -1,0 +1,8 @@
+# Configuración común de ambos servidores MySQL (docs/consola-sql.md §1)
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+# Colombia no tiene horario de verano: -05:00 equivale a America/Bogota
+default-time-zone = '-05:00'
+skip-name-resolve
+# El modo estricto (STRICT_TRANS_TABLES) viene activo por defecto en MySQL 8.4

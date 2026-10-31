@@ -1,0 +1,6 @@
+# Todo el texto con fin de línea LF (los scripts se ejecutan en Linux)
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.jpg binary
+*.woff2 binary
