@@ -19,8 +19,8 @@ export function HomePage() {
     <main className="flex flex-col gap-14 py-14">
       <div className="flex flex-col gap-5">
         <p className="section-label">00 · Recorrido</p>
-        <h1 className="max-w-4xl text-5xl font-black tracking-[-0.02em] sm:text-6xl">
-          Bases de datos con SQL desde <span className="text-cyan-l">cero</span>
+        <h1 className="max-w-4xl text-5xl font-bold tracking-[-0.01em] sm:text-6xl">
+          Bases de datos con SQL desde <span className="text-green">cero</span>
         </h1>
         <p className="max-w-2xl text-lg text-text-2">
           Diseña, crea y consulta una base de datos MySQL real desde el navegador, con un solo caso que crece tema a tema:
@@ -29,7 +29,7 @@ export function HomePage() {
         {firstAvailable && (
           <Link
             to={`/temas/${firstAvailable.slug}`}
-            className="flex w-fit items-center gap-2 rounded-full bg-linear-to-r from-cyan to-violet px-5 py-2.5 font-semibold text-bg transition hover:brightness-110"
+            className="btn-primary w-fit px-5 py-2.5"
           >
             Empezar el Tema {firstAvailable.numero} <ArrowRight aria-hidden className="size-4" />
           </Link>
@@ -37,8 +37,8 @@ export function HomePage() {
       </div>
 
       <section className="flex flex-col gap-4" aria-label="Temas del curso">
-        <h2 className="text-2xl font-black tracking-[-0.02em]">
-          Un solo camino, <span className="text-violet-l">diez temas</span>
+        <h2 className="text-2xl font-bold tracking-[-0.01em]">
+          Un solo camino, <span className="text-cyan-l">diez temas</span>
         </h2>
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {route.temas.map((topic) => (

@@ -28,4 +28,4 @@
 - El docente decide pesos y fechas; la app solo registra y reporta.
 
 ## Materiales complementarios
-- El docente proyecta presentaciones PDF con el estilo neón oscuro (ver `identidad-visual.md`); la de Tema 1 está en `presentaciones/`. La app debe sentirse como la misma familia visual.
+- El docente proyecta presentaciones PDF (la de Tema 1 está en `presentaciones/`, con el estilo neón anterior). La app usa el tema de PIA (ver `identidad-visual.md`).

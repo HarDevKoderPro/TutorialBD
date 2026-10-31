@@ -8,9 +8,9 @@ import { highlightSql, type TokenKind } from './highlightSql';
 
 export function Section({ id, etiqueta, titulo, children }: { id: string; etiqueta: string; titulo: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} data-section={etiqueta} className="flex scroll-mt-24 flex-col gap-6 border-t border-white/5 py-14 first:border-t-0 first:pt-4 [&>p]:text-lg [&>p]:text-text-2">
+    <section id={id} data-section={etiqueta} className="flex scroll-mt-24 flex-col gap-6 border-t border-white/5 py-14 first:border-t-0 first:pt-4 [&>p:not(.section-label)]:text-lg [&>p:not(.section-label)]:text-text-2">
       <p className="section-label">{etiqueta}</p>
-      <h2 className="text-3xl font-black tracking-[-0.02em] sm:text-4xl">{titulo}</h2>
+      <h2 className="text-3xl font-bold tracking-[-0.01em] sm:text-4xl">{titulo}</h2>
       {children}
     </section>
   );
@@ -122,11 +122,11 @@ export function ComingSoon({ children }: { children: ReactNode }) {
 }
 
 const TOKEN_CLASSES: Record<TokenKind, string> = {
-  keyword: 'text-violet-l',
-  type: 'text-amber-l',
-  constraint: 'text-green-l',
-  string: 'text-pink-l',
-  number: 'text-cyan-l',
+  keyword: 'text-violet',
+  type: 'text-blue',
+  constraint: 'text-green',
+  string: 'text-amber',
+  number: 'text-orange',
   comment: 'text-text-3',
   plain: 'text-text',
 };

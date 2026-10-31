@@ -13,7 +13,7 @@ Consulta según la tarea:
 - `docs/temario.md` — los 10 temas con contenido, errores provocados y ejercicios (con soluciones)
 - `docs/caso-base-tecnotienda.md` + `docs/sql/` — caso base, DER, planilla, schema y seed de referencia
 - `docs/proyecto-final-crud.md` — alcance, API, estructura y rúbrica del proyecto final
-- `docs/identidad-visual.md` — tokens de diseño (estilo neón oscuro)
+- `docs/identidad-visual.md` — tokens de diseño (tema PIA, paleta Night Owl)
 - `docs/presentaciones/` — presentación PDF del Tema 1 (referencia visual)
 
 ## Stack

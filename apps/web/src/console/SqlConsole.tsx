@@ -25,7 +25,7 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
   useEffect(() => {
     if (!container.current) return;
     const term = new Terminal({
-      fontFamily: "'JetBrains Mono Variable', 'JetBrains Mono', 'DejaVu Sans Mono', monospace",
+      fontFamily: "Consolas, 'JetBrains Mono Variable', 'JetBrains Mono', monospace",
       fontSize: 14,
       lineHeight: 1.25,
       cursorBlink: true,
@@ -34,11 +34,11 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
       cursorInactiveStyle: 'none',
       scrollback: 3000,
       theme: {
-        background: '#050915',
-        foreground: '#eef2ff',
-        cursor: '#22d3ee',
-        cursorAccent: '#050915',
-        selectionBackground: 'rgba(167, 139, 250, 0.35)',
+        background: '#01111d',
+        foreground: '#d6deeb',
+        cursor: '#7fdbca',
+        cursorAccent: '#01111d',
+        selectionBackground: 'rgba(29, 59, 83, 0.9)',
       },
     });
     const fit = new FitAddon();

@@ -17,9 +17,9 @@ const SESSION_KEY = 'sql-desde-cero:sesion';
 const MAX_HISTORY = 200;
 
 const color = {
-  error: (text: string) => `\x1b[38;2;253;164;175m${text}\x1b[0m`,
-  notice: (text: string) => `\x1b[38;2;252;211;77m${text}\x1b[0m`,
-  dim: (text: string) => `\x1b[38;2;154;166;200m${text}\x1b[0m`,
+  error: (text: string) => `\x1b[38;2;255;139;133m${text}\x1b[0m`,
+  notice: (text: string) => `\x1b[38;2;236;196;141m${text}\x1b[0m`,
+  dim: (text: string) => `\x1b[38;2;95;126;151m${text}\x1b[0m`,
 };
 
 const HELP = [

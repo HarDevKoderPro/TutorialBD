@@ -44,7 +44,7 @@ export function DbmsFlow({
       </div>
 
       <div className="card flex flex-col items-center gap-1 border border-violet/50 p-5 text-center shadow-[0_0_40px_-12px_var(--color-violet)] md:w-56">
-        <p className="text-2xl font-black">{sgbd.nombre}</p>
+        <p className="text-2xl font-bold">{sgbd.nombre}</p>
         <p className="text-xs text-text-2">{sgbd.detalle}</p>
       </div>
 

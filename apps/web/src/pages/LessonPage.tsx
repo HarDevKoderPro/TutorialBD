@@ -42,7 +42,7 @@ export function LessonPage() {
           <p className="section-label">
             Tema {String(frontmatter.numero).padStart(2, '0')} · {BLOCK_LABELS[topic.bloque]}
           </p>
-          <h1 className="text-5xl font-black tracking-[-0.02em] sm:text-6xl">{frontmatter.titulo}</h1>
+          <h1 className="text-5xl font-bold tracking-[-0.01em] sm:text-6xl">{frontmatter.titulo}</h1>
           <p className="max-w-2xl text-lg text-text-2">{frontmatter.resumen}</p>
           <ul className="flex flex-wrap gap-2">
             {frontmatter.temas.map((item) => (

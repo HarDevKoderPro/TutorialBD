@@ -111,7 +111,7 @@ function GradedFooter({
         <button
           type="button"
           onClick={onCheck}
-          className="flex items-center gap-2 rounded-full bg-linear-to-r from-cyan to-violet px-4 py-2 text-sm font-semibold text-bg transition hover:brightness-110"
+          className="btn-primary px-4 py-2 text-sm"
         >
           <Check aria-hidden className="size-4" /> Comprobar
         </button>
@@ -330,7 +330,7 @@ function OpenExercise({ exercise }: { exercise: Extract<Exercise, { tipo: 'abier
         type="button"
         disabled={!text.trim()}
         onClick={() => update((current) => ({ ...current, status: 'submitted', attempts: current.attempts + 1, answer: text }))}
-        className="flex w-fit items-center gap-2 rounded-full bg-linear-to-r from-cyan to-violet px-4 py-2 text-sm font-semibold text-bg transition hover:brightness-110 disabled:opacity-40"
+        className="btn-primary w-fit px-4 py-2 text-sm disabled:opacity-40"
       >
         <Send aria-hidden className="size-4" /> {submitted ? 'Actualizar respuesta' : 'Entregar'}
       </button>

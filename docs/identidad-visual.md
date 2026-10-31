@@ -1,69 +1,66 @@
-# Identidad visual · estilo «neón técnico»
+# Identidad visual · tema «PIA» (paleta Night Owl)
 
-La app debe verse como la misma familia que las presentaciones de clase del docente (ver `presentaciones/tema-01-conceptos-basicos.pdf`): fondo oscuro con cuadrícula técnica, acentos neón y diagramas antes que texto.
+> **Cambio 2026-10-31 (decisión del docente):** la app usa el mismo tema de PIA (smarteksoft.com) para mejorar la visibilidad y la comodidad visual: fondo oscuro liso, acentos pastel turquesa/menta y verde, tipografía Open Sans y código estilo Night Owl. Reemplaza el estilo «neón técnico» (cuadrícula, resplandores y acentos saturados). Las presentaciones PDF anteriores conservan su estilo propio.
 
 ## Tokens
+Implementados en `apps/web/src/styles.css` (`@theme`). Los nombres de acento se conservan para mantener su significado en la app.
 ```css
 :root {
   /* Fondo */
-  --bg: #070b1a;
-  --bg-elev: #0f1734;          /* tarjetas sólidas, maquetas, inputs */
-  --bg-code: #050915;          /* consola y bloques de código */
-  --grid-line: rgba(255,255,255,.035);   /* cuadrícula de 40px */
-  --glow-violet: rgba(167,139,250,.22);  /* resplandor arriba-derecha */
-  --glow-cyan: rgba(34,211,238,.18);     /* resplandor abajo-izquierda */
+  --bg: #04070d;               /* página (liso, sin cuadrícula ni resplandores) */
+  --bg-elev: #011627;          /* inputs y superficies sólidas */
+  --bg-code: #01111d;          /* consola y bloques de código */
+  --line: #1d3b53;             /* bordes de código y fondo del botón primario */
 
   /* Texto */
-  --text: #eef2ff;
-  --text-2: #9aa6c8;
-  --text-3: #5c6890;
+  --text: #d6deeb;
+  --text-2: #b6c3d8;
+  --text-3: #5f7e97;
 
-  /* Acentos (en este orden de uso) */
-  --cyan: #22d3ee;    --cyan-l: #67e8f9;
-  --violet: #a78bfa;  --violet-l: #c4b5fd;
-  --pink: #f472b6;    --pink-l: #f9a8d4;
-  --amber: #fbbf24;   --amber-l: #fcd34d;
-  --green: #34d399;   --green-l: #6ee7b7;
-  --coral: #fb7185;   --coral-l: #fda4af;
-  --neon-ok: #5effb1;  /* resultado correcto con brillo */
+  /* Acentos */
+  --cyan: #7fdbca;    --cyan-l: #9af5ce;   /* turquesa / menta (principal) */
+  --green: #addb67;   --green-l: #c3e88d;
+  --violet: #c792ea;  --violet-l: #d7b8f3;
+  --amber: #ecc48d;   --amber-l: #f5d9ad;
+  --pink: #f392c3;    --pink-l: #f9b8d9;
+  --coral: #ef5350;   --coral-l: #ff8b85;
+  --blue: #82aaff;    --orange: #f78c6c;   /* solo resaltado de código */
+  --neon-ok: #9af5ce;                      /* resultado correcto */
 
   /* Superficies */
-  --card-bg: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  --card-border: 1px solid rgba(255,255,255,.1);
-  --radius: 18px;
-  --radius-device: 32px;
+  --card-bg: linear-gradient(140deg, rgba(12,24,36,.95) 0%, rgba(9,18,28,.9) 100%);
+  --card-border: 1px solid rgba(108,219,170,.22);
+  --radius: 14px;
 }
 ```
-Fondo de página: `radial-gradient` violeta arriba a la derecha + cian abajo a la izquierda + cuadrícula de 40 px.
 
 ## Semántica del color
 | Color | Significado |
 |---|---|
-| Verde | Correcto, camino principal, nivel **Básico**, bloque CRUD |
+| Verde | Correcto, camino principal, nivel **Básico**, bloque CRUD, títulos de sección |
 | Coral | Error, aviso, acción destructiva (`DELETE`, `DROP`) |
 | Ámbar | Decisión, atención, nivel **Intermedio**, PK, bloque Consultas avanzadas |
-| Cian | Entrada, interfaz, consola, bloque Estructura |
+| Turquesa (cyan) | Entrada, interfaz, consola, bloque Estructura, títulos principales |
 | Violeta | Proceso, novedad, palabras clave SQL, bloque Diseño |
-| Rosa | Valores/strings en código, nivel **Avanzado** |
+| Rosa | Nivel **Avanzado** |
 
-Resaltado de sintaxis SQL (consola y editor): palabras clave violeta claro, tipos ámbar claro, restricciones (`PRIMARY KEY`, `NOT NULL`) verde claro, strings rosa claro, números cian claro, comentarios `--text-3`.
+Resaltado de sintaxis SQL (Night Owl): palabras clave violeta, tipos azul, restricciones (`PRIMARY KEY`, `NOT NULL`) verde, strings ámbar, números naranja, comentarios `--text-3`.
 
 ## Tipografía
-- Títulos: **Inter Display** 800–900, `letter-spacing: -0.02em`, con **una palabra clave en color sólido claro** (`--cyan-l`, `--violet-l`…).
-- Texto: **Inter** 400–700.
-- Código, consola, cifras: **JetBrains Mono** o **DejaVu Sans Mono**.
+- Texto y títulos: **Open Sans** (autoalojada). Títulos 700, `letter-spacing: -0.01em`.
+- `h1` en menta (`--cyan-l`); `h2` en verde (`--green`) con una palabra clave en menta.
+- Código, consola, cifras: **Consolas** (respaldo: JetBrains Mono).
 - **Nunca** texto con degradado (`background-clip: text`).
 
 ## Componentes
-- **Etiqueta de sección:** mayúsculas cian, 13 px, `letter-spacing: .22em`, precedida de una línea de 28 px con degradado cian→violeta. Formato `NN · Sección`.
-- **Tarjeta:** `--card-bg`, `--card-border`, radio 18 px; destacada = borde del acento al 35–45 %.
+- **Etiqueta de sección:** mayúsculas turquesa, 13 px, `letter-spacing: .2em`, precedida de una línea turquesa de 28 px. Formato `NN · Sección`.
+- **Tarjeta:** `--card-bg`, `--card-border`, radio 14 px; destacada = borde del acento al 35–45 %.
+- **Botón primario (`.btn-primary`):** fondo `--line`, borde y texto turquesa; al pasar el cursor, fondo turquesa y texto oscuro. Secundario: solo borde.
 - **Chips/píldoras:** borde de color, texto del color claro.
-- **Insignias de nivel:** Básico verde, Intermedio ámbar, Avanzado rosa. Estado: «✓ PASA» verde, «✗ FALLA» coral.
-- **Botón primario:** degradado cian→violeta; secundario: borde.
-- **Tabla de datos:** filas como tarjetas separadas (`border-spacing: 0 8px`), IDs en monoespaciada cian.
-- **Diagramas:** siempre SVG/HTML propios (no imágenes). Flujos: inicio/fin píldora cian, decisión rombo ámbar, proceso rectángulo violeta, resultado verde; flecha «SÍ» verde, «NO» coral; regresos con línea punteada.
-- **Iconos:** trazo SVG (p. ej. Lucide) dentro de un cuadro con el acento al 15 %.
-- **Animaciones:** sutiles (200–400 ms), para explicar (agrupar filas, mover columnas), no para decorar; respetar `prefers-reduced-motion`.
+- **Insignias de nivel:** Básico verde, Intermedio ámbar, Avanzado rosa. Estado: «✓ PASA» menta, «✗» coral.
+- **Diagramas:** siempre SVG/HTML propios (no imágenes).
+- **Iconos:** trazo SVG (Lucide) dentro de un cuadro con el acento al 15 %.
+- **Animaciones:** sutiles (200–400 ms), para explicar, no para decorar; respetar `prefers-reduced-motion`.
 
 ## Tema claro
 No es necesario en v1. Si se agrega, debe ser opcional; el oscuro es el predeterminado (proyección en el aula).

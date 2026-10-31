@@ -31,7 +31,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 > Regla: no reescribir el enfoque pedagógico ni cambiar el caso base sin consultarlo con el docente. Ajustes de redacción, corrección de errores y detalles técnicos sí se pueden hacer, dejando nota aquí.
 
 ## Preferencias del docente
-- Estilo visual oscuro de cuadrícula técnica con acentos neón (cian, violeta, rosa, ámbar, verde, coral), tipografía Inter, títulos en negrita con una palabra clave en color, diagramas antes que texto largo. Ver `identidad-visual.md`.
+- 2026-10-31 · **Tema visual de PIA** (paleta Night Owl, Open Sans, fondo oscuro liso, acentos turquesa/menta y verde) para mejorar la visibilidad y la comodidad visual; reemplaza el estilo neón de cuadrícula. Ver `identidad-visual.md`. Diagramas antes que texto largo.
 - Quiere reutilizar esa misma estructura y estética en todo el material.
 - Respuestas y contenidos en español.
 
