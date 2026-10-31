@@ -1,8 +1,8 @@
 # Proyecto final · CRUD completo de TecnoTienda
 
-El aprendiz construye una aplicación web pequeña pero completa que recorre **todo** lo visto: diseño → base de datos → API → frontend. Es la evidencia de producto del curso.
+El estudiante construye una aplicación web pequeña pero completa que recorre **todo** lo visto: diseño → base de datos → API → frontend. Es el entregable final del curso.
 
-## 1. Alcance para el aprendiz
+## 1. Alcance para el estudiante
 **«TecnoTienda Admin»**, panel interno de la tienda:
 
 | Módulo | Obligatorio | Operaciones |
@@ -13,15 +13,15 @@ El aprendiz construye una aplicación web pequeña pero completa que recorre **t
 | Pedidos | Avanzado | Crear pedido con varias líneas en **una transacción** (descuenta stock), listar con total calculado, cambiar estado. |
 | Reportes | Avanzado | Ventas por categoría y mejores clientes (consumiendo las vistas del Tema 9). |
 
-Variante opcional (decisión del instructor): el aprendiz elige otro dominio (biblioteca, gimnasio, citas) y aplica las mismas etapas.
+Variante opcional (decisión del docente): el estudiante elige otro dominio (biblioteca, gimnasio, citas) y aplica las mismas etapas.
 
-## 2. Stack del proyecto (pensado para aprendices técnicos)
+## 2. Stack del proyecto (pensado para estudiantes técnicos)
 - **Base de datos:** MySQL 8 (su sandbox en la app o un MySQL local).
 - **Backend:** Node.js LTS + Express + `mysql2/promise` + `dotenv`. Sin ORM: el objetivo es ver el SQL.
 - **Frontend:** HTML + CSS + JavaScript sin framework, con `fetch`. Así se ve claramente el enlace frontend ↔ API.
 - **Pruebas de API:** cliente REST (Thunder Client, REST Client de VS Code o similar) o los archivos `.http` incluidos.
 
-> La app de enseñanza usa React/TypeScript internamente, pero el proyecto del aprendiz es deliberadamente simple.
+> La app de enseñanza usa React/TypeScript internamente, pero el proyecto del estudiante es deliberadamente simple.
 
 ## 3. Etapas (cada una con entregable y verificación)
 | # | Etapa | Entregable | Verificación |
@@ -54,7 +54,7 @@ Variante opcional (decisión del instructor): el aprendiz elige otro dominio (bi
 
 Respuestas JSON; códigos HTTP correctos (200, 201, 400, 404, 409, 500); traducción de errores MySQL a mensajes en español.
 
-## 5. Estructura de carpetas (plantilla del aprendiz)
+## 5. Estructura de carpetas (plantilla del estudiante)
 ```
 proyecto-final/plantilla/
 ├── bd/
@@ -88,10 +88,10 @@ proyecto-final/plantilla/
 └── README.md
 ```
 - `proyecto-final/plantilla/`: mismo árbol con funciones a completar marcadas `// TODO (Etapa N)` y comentarios guía en español.
-- `proyecto-final/referencia/`: implementación completa y funcional (solo visible para el instructor en la app).
+- `proyecto-final/referencia/`: implementación completa y funcional (solo visible para el docente en la app).
 - Código del proyecto con identificadores y comentarios **en español** (es material de aprendizaje).
 
-## 6. Rúbrica sugerida (el instructor ajusta pesos)
+## 6. Rúbrica sugerida (el docente ajusta pesos)
 | Criterio | Peso |
 |---|---|
 | DER correcto y en 3FN | 15 % |

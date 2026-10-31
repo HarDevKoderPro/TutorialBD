@@ -1,6 +1,6 @@
 # Identidad visual · estilo «neón técnico»
 
-La app debe verse como la misma familia que las presentaciones de clase del instructor (ver `presentaciones/tema-01-conceptos-basicos.pdf`): fondo oscuro con cuadrícula técnica, acentos neón y diagramas antes que texto.
+La app debe verse como la misma familia que las presentaciones de clase del docente (ver `presentaciones/tema-01-conceptos-basicos.pdf`): fondo oscuro con cuadrícula técnica, acentos neón y diagramas antes que texto.
 
 ## Tokens
 ```css
@@ -66,4 +66,4 @@ Resaltado de sintaxis SQL (consola y editor): palabras clave violeta claro, tipo
 - **Animaciones:** sutiles (200–400 ms), para explicar (agrupar filas, mover columnas), no para decorar; respetar `prefers-reduced-motion`.
 
 ## Tema claro
-No es necesario en v1. Si se agrega, debe ser opcional; el oscuro es el predeterminado (proyección en el ambiente).
+No es necesario en v1. Si se agrega, debe ser opcional; el oscuro es el predeterminado (proyección en el aula).

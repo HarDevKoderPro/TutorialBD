@@ -1,4 +1,4 @@
-# Servidor de sandboxes de aprendices (consola SQL)
+# Servidor de sandboxes de estudiantes (consola SQL)
 [mysqld]
 innodb_buffer_pool_size = 512M
 max_connections = 200

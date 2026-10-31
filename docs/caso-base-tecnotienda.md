@@ -1,8 +1,8 @@
 # Caso base · TecnoTienda
 
-Caso único que atraviesa todo el recorrido: los aprendices lo **diseñan** (temas 2–3), lo **construyen** (tema 4), lo **llenan y operan** (temas 5–7), lo **consultan** (temas 8–9) y lo **conectan a una aplicación** (tema 10 y proyecto final).
+Caso único que atraviesa todo el recorrido: los estudiantes lo **diseñan** (temas 2–3), lo **construyen** (tema 4), lo **llenan y operan** (temas 5–7), lo **consultan** (temas 8–9) y lo **conectan a una aplicación** (tema 10 y proyecto final).
 
-## Enunciado (se entrega a los aprendices en el Tema 2)
+## Enunciado (se entrega a los estudiantes en el Tema 2)
 
 > TecnoTienda es una tienda de tecnología en Colombia que hoy lleva sus ventas en una hoja de cálculo y quiere un sistema propio.
 >
@@ -96,5 +96,5 @@ Totales por pedido (para pruebas automáticas): 1 → 2.558.900 · 2 → 309.700
 
 ## Caso de transferencia: Biblioteca
 
-Usado en ejercicios avanzados para comprobar que el aprendiz puede repetir el proceso solo:
+Usado en ejercicios avanzados para comprobar que el estudiante puede repetir el proceso solo:
 planilla `prestamos_biblioteca(libro, autor, lector, tel_lector, fecha)` → 3FN: `autores`, `libros`, `libro_autor` (N:M), `lectores`, `prestamos`.

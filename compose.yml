@@ -47,7 +47,7 @@ services:
       resources:
         limits: { memory: 512m, cpus: '1' }
 
-  # Datos de la app: usuarios, fichas, progreso
+  # Datos de la app: usuarios, grupos, progreso
   mysql-app:
     image: mysql:8.4
     restart: unless-stopped
@@ -71,7 +71,7 @@ services:
       resources:
         limits: { memory: 1g, cpus: '1' }
 
-  # Sandboxes de los aprendices (consola SQL); limitado para no afectar a otros proyectos del VPS
+  # Sandboxes de los estudiantes (consola SQL); limitado para no afectar a otros proyectos del VPS
   mysql-sbx:
     image: mysql:8.4
     restart: unless-stopped

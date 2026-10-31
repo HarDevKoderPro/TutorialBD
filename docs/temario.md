@@ -1,15 +1,15 @@
 # Temario · Bases de datos con SQL desde cero
 
-> Estado: **propuesta para validación del instructor.** El Tema 1 está desarrollado y maquetado (presentación PDF); los temas 2 a 10 son la propuesta de contenido acordada en la planeación y pueden cambiar.
+> Estado: **propuesta para validación del docente.** El Tema 1 está desarrollado y maquetado (presentación PDF); los temas 2 a 10 son la propuesta de contenido acordada en la planeación y pueden cambiar.
 >
-> Los temas **no son clases**: forman un recorrido continuo. El instructor avanza a su ritmo y el aprendiz continúa donde quedó.
+> Los temas **no son clases**: forman un recorrido continuo. El docente avanza a su ritmo y el estudiante continúa donde quedó.
 
 Todos los temas usan el **caso base TecnoTienda** (ver `caso-base-tecnotienda.md`). Cada tema tiene:
 
 - **Objetivo** de aprendizaje.
 - **Contenido** (lo que la lección debe explicar, con diagramas antes que texto).
 - **Ejemplo base** sobre TecnoTienda.
-- **Errores provocados**: instrucciones que el aprendiz ejecuta a propósito para ver fallar al SGBD y entender la regla.
+- **Errores provocados**: instrucciones que el estudiante ejecuta a propósito para ver fallar al SGBD y entender la regla.
 - **Ejercicios** en tres niveles (Básico, Intermedio, Avanzado), ordenados de menor a mayor complejidad.
 
 ### Formato de los ejercicios
@@ -18,9 +18,9 @@ Cada ejercicio tiene un ID `T<tema>-<nivel><n>` (ej. `T6-B2`) y un **tipo de val
 
 | Tipo | Cómo se valida |
 |---|---|
-| `resultado` | Se ejecuta la consulta del aprendiz y la solución sobre los mismos datos y se comparan los conjuntos de resultados (sin importar el orden, salvo que el enunciado pida `ORDER BY`; nombres de columna/alias no importan salvo que se pidan). |
+| `resultado` | Se ejecuta la consulta del estudiante y la solución sobre los mismos datos y se comparan los conjuntos de resultados (sin importar el orden, salvo que el enunciado pida `ORDER BY`; nombres de columna/alias no importan salvo que se pidan). |
 | `estructura` | Se inspecciona `information_schema` (tablas, columnas, tipos, PK, FK, UNIQUE, NOT NULL) contra lo esperado. |
-| `estado` | Se ejecuta lo del aprendiz y luego una consulta de verificación que debe devolver lo esperado (para INSERT/UPDATE/DELETE). |
+| `estado` | Se ejecuta lo del estudiante y luego una consulta de verificación que debe devolver lo esperado (para INSERT/UPDATE/DELETE). |
 | `error` | El ejercicio pide provocar un error; se valida el código de error MySQL esperado. |
 | `manual` | Respuesta abierta o diagrama; la app muestra una rúbrica y la solución de referencia tras el intento. |
 
@@ -52,7 +52,7 @@ Las soluciones `SQL` están escritas para MySQL 8 sobre los datos de `sql/tecnot
 
 **Contenido**
 1. Dato vs. información. «3001234567» es un dato; «El teléfono de Laura es 3001234567» es información.
-2. Base de datos: conjunto de datos relacionados y organizados sobre un mismo tema. Ejemplos cercanos: Sofía Plus (aprendices, fichas, notas), Nequi (usuarios, movimientos), contactos del celular.
+2. Base de datos: conjunto de datos relacionados y organizados sobre un mismo tema. Ejemplos cercanos: la plataforma académica de tu institución (estudiantes, grupos, notas), Nequi (usuarios, movimientos), contactos del celular.
 3. SGBD: software que administra la BD (MySQL, MariaDB, PostgreSQL, SQL Server). Diagrama: Aplicación → SQL → SGBD → BD, y resultados de vuelta. La app nunca toca los datos directamente.
 4. Anatomía de una tabla: tabla, campo (columna), registro (fila), valor (cruce).
 5. Tipos de dato (introducción): `INT`, `DECIMAL`, `VARCHAR`, `DATE`, `BOOLEAN`.
@@ -60,7 +60,7 @@ Las soluciones `SQL` están escritas para MySQL 8 sobre los datos de `sql/tecnot
 
 **Ejemplo base:** tabla `clientes` (3 registros) y diagrama `clientes` ← `pedidos` por `id_cliente`.
 
-**Primer contacto con la consola** (el aprendiz solo pega y observa; aún no se explica la sintaxis):
+**Primer contacto con la consola** (el estudiante solo pega y observa; aún no se explica la sintaxis):
 ```sql
 CREATE TABLE clientes (
   id_cliente INT PRIMARY KEY,
@@ -79,8 +79,8 @@ SELECT * FROM clientes;
 **Error provocado:** `INSERT INTO clientes VALUES (1, 'Pedro Díaz', 'Pasto', '3150000000', '2026-03-01');` → error 1062 *Duplicate entry '1' for key 'clientes.PRIMARY'*. Pregunta: ¿por qué lo rechaza?
 
 **Ejercicios**
-- `T1-B1` (manual) · En la tabla `aprendices` (documento, nombre, ficha; 5 registros: Sara León 2758, Juan Pérez 2758, Ana Mora 2759, Luis Rojas 2758, Eva Díaz 2759): nombre de la tabla, campos, número de registros y el valor de `ficha` para Ana Mora. *Respuesta: aprendices; documento, nombre, ficha; 5; 2759.*
-- `T1-B2` (manual, selección) · Clasificar como dato o información: «Bogotá», «La ficha 2758 tiene 32 aprendices», «15», «El producto más vendido fue el mouse». *Respuesta: dato, información, dato, información.*
+- `T1-B1` (manual) · En la tabla `estudiantes` (documento, nombre, grupo; 5 registros: Sara León 2758, Juan Pérez 2758, Ana Mora 2759, Luis Rojas 2758, Eva Díaz 2759): nombre de la tabla, campos, número de registros y el valor de `grupo` para Ana Mora. *Respuesta: estudiantes; documento, nombre, grupo; 5; 2759.*
+- `T1-B2` (manual, selección) · Clasificar como dato o información: «Bogotá», «El grupo 2758 tiene 32 estudiantes», «15», «El producto más vendido fue el mouse». *Respuesta: dato, información, dato, información.*
 - `T1-I1` (manual) · Para `producto` y `proveedor`, proponer 4–5 campos con tipo de dato y elegir la PK. Aviso: justificar cada tipo.
 - `T1-I2` (manual, selección) · ¿Mejor PK para un cliente: nombre, teléfono, correo o número consecutivo? Aviso: ¿puede repetirse? ¿puede cambiar? *Respuesta: consecutivo (o documento); los demás se repiten o cambian.*
 - `T1-A1` (manual) · Planilla `prestamos_biblioteca` (libro, autor, lector, tel_lector, fecha) con datos repetidos: ¿qué se repite y qué problema causa?, ¿qué tablas deberían existir?, ¿PK de cada una?, ¿qué campo las uniría? Aviso: todavía sin SQL. *Referencia: autores, libros, lectores, prestamos; FK id_libro e id_lector en prestamos; id_autor en libros.*
@@ -106,7 +106,7 @@ SELECT * FROM clientes;
 
 **Ejercicios**
 - `T2-B1` (manual) · Del texto «Un gimnasio registra a sus socios con nombre, documento y teléfono. Cada socio puede inscribirse en varias clases; cada clase tiene nombre, horario e instructor» subrayar entidades y atributos. *Ref.: socio, clase, instructor (o atributo de clase).*
-- `T2-B2` (manual, selección) · Cardinalidad de: país–capital, docente–fichas que orienta, estudiante–cursos, factura–cliente. *Ref.: 1:1, 1:N, N:M, N:1.*
+- `T2-B2` (manual, selección) · Cardinalidad de: país–capital, docente–grupos que orienta, estudiante–cursos, factura–cliente. *Ref.: 1:1, 1:N, N:M, N:1.*
 - `T2-I1` (manual) · Leer en voz alta (escribir) las 4 relaciones del DER de TecnoTienda en ambos sentidos.
 - `T2-I2` (manual) · Convertir la N:M estudiante–curso en entidad intermedia `matricula` y proponer 2 atributos propios. *Ref.: fecha_matricula, nota_final.*
 - `T2-A1` (manual, DER) · DER completo de la biblioteca del ejercicio T1-A1 con cardinalidades en pata de gallo. Aviso: un libro puede tener varios autores. *Ref.: autores N:M libros (libro_autor), lectores 1:N prestamos, libros 1:N prestamos.*
@@ -135,7 +135,7 @@ SELECT * FROM clientes;
 - `T3-B1` (manual, selección) · En la planilla, señalar un ejemplo de cada anomalía.
 - `T3-B2` (manual, selección) · ¿Qué celdas violan la 1FN? *Ref.: productos, categoria, precios.*
 - `T3-I1` (manual) · Llevar la planilla de la biblioteca a 1FN (tabla resultante con filas).
-- `T3-I2` (manual) · Tabla `notas(documento, nombre_aprendiz, codigo_competencia, nombre_competencia, nota)` con PK (documento, codigo_competencia): identificar dependencias parciales y llevar a 2FN. *Ref.: aprendices(documento, nombre), competencias(codigo, nombre), notas(documento, codigo, nota).*
+- `T3-I2` (manual) · Tabla `notas(documento, nombre_estudiante, codigo_competencia, nombre_competencia, nota)` con PK (documento, codigo_competencia): identificar dependencias parciales y llevar a 2FN. *Ref.: estudiantes(documento, nombre), competencias(codigo, nombre), notas(documento, codigo, nota).*
 - `T3-A1` (manual) · Llevar la biblioteca a 3FN y comparar con el DER hecho en T2-A1; explicar las diferencias.
 
 ---
