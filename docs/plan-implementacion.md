@@ -1,6 +1,6 @@
 # Plan de implementación por etapas
 
-> **Reorganizado el 2026-10-31** (ver `memoria.md`): primero una versión usable para la Clase 1 publicada en el VPS, y luego un tema por delante del grupo, en el orden del curso. El plan original por fases (0–7) quedó absorbido en estas etapas.
+> **Reorganizado el 2026-10-31** (ver `memoria.md`): las etapas siguen el orden de los temas. **Cada tema se habilita en la app apenas se termina y el docente lo aprueba**, sin depender de fechas ni del número de clases que ocupe. El plan original por fases (0–7) quedó absorbido en estas etapas.
 
 Cada etapa termina con algo usable, publicado en https://sql.smarteksoft.com y con sus criterios de aceptación cumplidos. Al cerrar una etapa: actualizar `docs/memoria.md` (decisiones y estado) y mostrar al docente el resultado antes de continuar.
 
@@ -10,7 +10,7 @@ Cada etapa termina con algo usable, publicado en https://sql.smarteksoft.com y c
 - GitHub Actions: tipos, lint, pruebas y build → despliegue por SSH con llave de comando forzado → `scripts/deploy.sh` (verificación del commit y rollback) → verificación pública.
 - **Aceptación:** un push a `main` se publica solo; al refrescar la página `/api/health` muestra el commit nuevo; si la verificación falla, el VPS vuelve al commit anterior.
 
-## Etapa 1 · Versión Clase 1 (Tema 1)
+## Etapa 1 · Tema 1 (Conceptos básicos)
 - Ingreso con código de grupo (estudiante) y cuenta de docente; ruta del curso con el Tema 1 activo.
 - Cargador de contenido (`content/temas/01-.../leccion.mdx`, `ejercicios.yaml`, `content/errores.yaml`) con validación de esquema.
 - Lección del Tema 1 con diagramas propios (dato/información, App→SGBD→BD, anatomía de tabla, PK/FK) y bloques predice → ejecuta → explica.
@@ -43,7 +43,7 @@ Cada etapa termina con algo usable, publicado en https://sql.smarteksoft.com y c
 - Módulo guiado del proyecto con verificación automática de las etapas 3 y 4.
 - **Aceptación:** la referencia arranca con `npm install && npm start` contra el MySQL del sandbox y cumple toda la tabla de API de `proyecto-final-crud.md`; la plantilla arranca sin errores aunque falten los TODO.
 
-## Etapa 7 · Pulido (en paralelo, sin bloquear clases)
+## Etapa 7 · Pulido (en paralelo, sin bloquear la publicación de temas)
 - Editor visual de DER (React Flow) y laboratorio de normalización completo.
 - Panel del docente completo: mapa de calor, errores frecuentes, exportar CSV.
 - Pruebas e2e (Playwright) del recorrido de estudiante y docente.

@@ -19,7 +19,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 | Etapa | Estado |
 |---|---|
 | 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
-| 1 · Versión Clase 1 | Siguiente |
+| 1 · Tema 1 | Siguiente |
 
 ## Estado del contenido
 | Tema | Estado |
@@ -36,11 +36,11 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - Respuestas y contenidos en español.
 
 ## Decisiones técnicas
-- 2026-10-31 · **Plan reorganizado en etapas** (`plan-implementacion.md`): primero la versión Clase 1 publicada, luego un tema por delante del grupo en el orden del curso (temas 2–3 antes que 4) · Tener algo útil en clase cuanto antes; el plan original ponía DER/normalización después de los temas 7–9.
+- 2026-10-31 · **Plan reorganizado en etapas** (`plan-implementacion.md`): etapas en el orden de los temas (2–3 antes que 4); cada tema se habilita al terminarse y aprobarse, sin fechas ligadas a clases · El tutorial se consume por temas; el plan original ponía DER/normalización después de los temas 7–9.
 - 2026-10-31 · **Despliegue en el VPS Contabo del docente**, en https://sql.smarteksoft.com, siguiendo su patrón de proyectos: `/opt/apps/tutorialbd` (clon de `main`), Caddy compartido en `/opt/caddy` con la red externa `proxy`, `scripts/deploy.sh` como comando forzado de una llave SSH dedicada, verificación del commit publicado y rollback automático · Consistencia con los demás proyectos del VPS.
 - 2026-10-31 · **CI antes de desplegar**: GitHub Actions ejecuta tipos, lint, pruebas y build; solo si pasan se despliega. Las imágenes se construyen en el VPS (como los demás proyectos) · El VPS tiene 8 vCPU / 23 GB.
 - 2026-10-31 · **Dos MySQL 8.4 separados**: `mysql-app` (`aula_app`) y `mysql-sbx` (sandboxes) en red interna, con límites de memoria/CPU (sandbox: 2 GB / 2 CPU) · Un estudiante no puede afectar los datos de la app ni a los otros proyectos del VPS. La API usa `sbx_admin` (sin acceso root) para aprovisionar.
-- 2026-10-31 · **La Clase 1 no necesita el mapeo de nombres**: cada estudiante tiene una base `practica` propia y abre la consola ya dentro de ella (resuelve el `ERROR 1046` del ejemplo del Tema 1). El mapeo se implementa en la Etapa 3, antes del Tema 4 · Aun con RAM suficiente para un contenedor por estudiante, se prefiere el mapeo porque controlar Docker desde la API equivale a darle root.
+- 2026-10-31 · **El Tema 1 no necesita el mapeo de nombres**: cada estudiante tiene una base `practica` propia y abre la consola ya dentro de ella (resuelve el `ERROR 1046` del ejemplo del Tema 1). El mapeo se implementa en la Etapa 3, antes del Tema 4 · Aun con RAM suficiente para un contenedor por estudiante, se prefiere el mapeo porque controlar Docker desde la API equivale a darle root.
 - 2026-10-31 · Versiones: React 18.3, Vite 8, Tailwind 4, TypeScript 6.0 (no 7: typescript-eslint aún no lo soporta), Fastify 5, mysql2 3, Vitest 5, Node 22. Fuentes Inter y JetBrains Mono autoalojadas (`@fontsource`), sin CDN externo.
 
 ## Errores detectados en la documentación (pendientes de aprobación)
@@ -51,7 +51,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 ## Pendientes / preguntas abiertas
 - Aislamiento de la consola: mapeo de nombres vs. contenedor por estudiante (Etapa 3).
 - Repositorio `HarDevKoderPro/TutorialBD` es público: decidir si pasa a privado antes de subir `proyecto-final/referencia`.
-- ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`) antes de la primera clase?
+- ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`)?
 - Copia cifrada de respaldos con rclone (remoto `tutorialbd-crypt:`).
 - ¿El proyecto final permite dominios distintos a TecnoTienda?
 - ¿Pesos de la rúbrica y relación con la calificación formal?
