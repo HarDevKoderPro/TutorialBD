@@ -2,7 +2,7 @@ import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 // Datos de tareas calificables, ajustes del docente y asistencia (aula_app). Consultas parametrizadas.
 
-export type GradedBy = 'auto' | 'ia' | 'pendiente';
+export type GradedBy = 'auto' | 'ia' | 'pendiente' | 'docente';
 export type AttendanceStatus = 'presente' | 'tarde' | 'ausente' | 'excusa';
 
 export interface Submission {
@@ -121,6 +121,19 @@ export class GradesStore {
        ON DUPLICATE KEY UPDATE grade = incoming.grade, comment = incoming.comment`,
       [studentId, taskId, grade, comment],
     );
+  }
+
+  // El docente califica una entrega (respuestas abiertas): solo de estudiantes de sus grupos
+  async gradeSubmission(teacherId: number, studentId: number, taskId: string, attempt: number, grade: number, comment: string | null): Promise<boolean> {
+    const [result] = await this.pool.query<ResultSetHeader>(
+      `UPDATE task_submissions s
+       JOIN users u ON u.id = s.user_id
+       JOIN course_groups g ON g.id = u.group_id
+       SET s.grade = ?, s.justification = ?, s.graded_by = 'docente', s.graded_at = NOW()
+       WHERE s.user_id = ? AND s.task_id = ? AND s.attempt = ? AND g.teacher_id = ?`,
+      [grade, comment, studentId, taskId, attempt, teacherId],
+    );
+    return result.affectedRows > 0;
   }
 
   // ---------- asistencia ----------

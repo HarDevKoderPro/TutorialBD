@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Download, ImageIcon, RefreshCw, Share2, Sparkles, X } from 'lucide-react';
+import { ClipboardCheck, Download, ImageIcon, RefreshCw, Share2, X } from 'lucide-react';
 import { api } from '../api';
 import { LEVELS } from '../exercises/ExerciseList';
 import type { ExerciseLevel } from '../exercises/schema';
@@ -10,6 +10,7 @@ interface TaskGrade {
   grade: number | null;
   source: 'auto' | 'ia' | 'docente' | 'pendiente';
   attempts: number;
+  pending: number;
   justification: string | null;
 }
 
@@ -89,6 +90,11 @@ export function GradesTab({ groupId }: { groupId: number }) {
   if (error) return <p className="text-coral-l">{error}</p>;
   if (!report) return <p className="text-text-2">Cargando notas…</p>;
 
+  // Cola de respuestas abiertas sin calificar, en el orden de la tabla
+  const pendingList = report.students.flatMap((student) =>
+    report.tasks.filter((task) => (student.grades[task.id]?.pending ?? 0) > 0).map((task) => ({ student, taskId: task.id })),
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -108,6 +114,17 @@ export function GradesTab({ groupId }: { groupId: number }) {
         <span className="text-xs text-text-3">Definitiva = promedio de las tareas calificadas · {report.group.sessions} sesiones con asistencia</span>
       </div>
       {notice && <p className="rounded-lg bg-green/10 px-3 py-2 text-sm text-green">{notice}</p>}
+      {pendingList.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cyan/40 bg-cyan/5 px-4 py-3">
+          <p className="text-sm">
+            <strong className="text-cyan-l">{pendingList.length}</strong>{' '}
+            {pendingList.length === 1 ? 'respuesta abierta por calificar' : 'respuestas abiertas por calificar'}
+          </p>
+          <button type="button" onClick={() => setSelected(pendingList[0]!)} className="btn-primary px-3 py-1.5 text-sm">
+            <ClipboardCheck aria-hidden className="size-4" /> Calificar la siguiente
+          </button>
+        </div>
+      )}
 
       {report.students.length === 0 ? (
         <p className="text-text-2">Aún no hay estudiantes en este grupo.</p>
@@ -145,8 +162,12 @@ export function GradesTab({ groupId }: { groupId: number }) {
                             className={`rounded px-1.5 py-0.5 font-mono font-semibold hover:bg-white/5 ${gradeColor(entry.grade)}`}
                             title={entry.justification ?? ''}
                           >
-                            {entry.grade === null ? '…' : formatGrade(entry.grade)}
-                            {entry.source === 'ia' && <Sparkles aria-label="IA" className="ml-0.5 inline size-3 text-violet" />}
+                            {entry.grade === null ? <span className="text-cyan">●</span> : formatGrade(entry.grade)}
+                            {entry.grade !== null && entry.pending > 0 && (
+                              <span className="ml-0.5 text-[10px] text-cyan" title="Tiene una entrega por calificar">
+                                ●
+                              </span>
+                            )}
                             {entry.source === 'docente' && <span className="ml-0.5 text-[10px] text-cyan">D</span>}
                           </button>
                         ) : (
@@ -167,14 +188,13 @@ export function GradesTab({ groupId }: { groupId: number }) {
         </div>
       )}
       <p className="flex flex-wrap gap-4 text-xs text-text-3">
-        <span>Clic en una nota para ver las entregas y ajustarla</span>
-        <span className="flex items-center gap-1">
-          <Sparkles aria-hidden className="size-3 text-violet" /> calificada por IA
+        <span>Clic en una nota para ver las entregas y calificar</span>
+        <span>
+          <span className="text-cyan">●</span> entrega por calificar
         </span>
         <span>
-          <span className="text-cyan">D</span> ajustada por el docente
+          <span className="text-cyan">D</span> calificada o ajustada por el docente
         </span>
-        <span>… pendiente de calificar</span>
       </p>
 
       {selected && (
@@ -296,19 +316,34 @@ function TaskDetail({
             <div key={submission.attempt} className="rounded-xl border border-line bg-bg-code p-4 text-sm">
               <div className="flex items-center justify-between">
                 <p className="font-semibold">
-                  Entrega {submission.attempt} {submission.gradedBy === 'ia' && <span className="text-xs font-normal text-violet">· IA</span>}
+                  Entrega {submission.attempt}
                 </p>
                 <p className={`font-mono text-lg font-bold ${gradeColor(submission.grade)}`}>{submission.grade === null ? 'Por calificar' : formatGrade(submission.grade)}</p>
               </div>
               <p className="mt-2 whitespace-pre-line">{describe(submission)}</p>
-              {submission.justification && <p className="mt-2 text-text-2">{submission.justification}</p>}
+              {data.task.tipo === 'abierta' ? (
+                <SubmissionGradeForm studentId={studentId} taskId={taskId} submission={submission} onSaved={onSaved} />
+              ) : (
+                submission.justification && <p className="mt-2 text-text-2">{submission.justification}</p>
+              )}
             </div>
           ))}
+          {data.task.tipo === 'abierta' && data.task.rubrica && (
+            <div className="text-sm text-text-2">
+              <p className="font-semibold text-text">Rúbrica</p>
+              <ul className="mt-1 list-disc pl-5">
+                {data.task.rubrica.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <details className="text-sm text-text-2">
             <summary className="cursor-pointer text-cyan">Ver solución / referencia</summary>
             <p className="mt-2 whitespace-pre-line">{data.solution}</p>
           </details>
-          <div className="grid gap-3 sm:grid-cols-[8rem_1fr]">
+          {data.task.tipo !== 'abierta' && <p className="text-sm font-semibold">Ajustar la nota calculada (opcional)</p>}
+          <div className={`grid gap-3 sm:grid-cols-[8rem_1fr] ${data.task.tipo === 'abierta' ? 'hidden' : ''}`}>
             <label className="flex flex-col gap-1.5 text-sm">
               <span className="text-text-2">Nota (0,0–5,0)</span>
               <input
@@ -324,7 +359,7 @@ function TaskDetail({
               <input value={comment} onChange={(event) => setComment(event.target.value)} className="rounded-lg border border-line bg-bg-elev px-3 py-2 outline-none focus:border-cyan" />
             </label>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className={`flex flex-wrap gap-2 ${data.task.tipo === 'abierta' ? 'hidden' : ''}`}>
             <button type="button" onClick={() => void save()} className="btn-primary px-4 py-2 text-sm">
               Guardar nota del docente
             </button>
@@ -337,6 +372,69 @@ function TaskDetail({
         </>
       )}
       {error && <p className="text-sm text-coral-l">{error}</p>}
+    </div>
+  );
+}
+
+// Nota del docente para una entrega abierta: cuenta la mejor de las dos entregas
+function SubmissionGradeForm({
+  studentId,
+  taskId,
+  submission,
+  onSaved,
+}: {
+  studentId: number;
+  taskId: string;
+  submission: Submission;
+  onSaved: () => void;
+}) {
+  const [grade, setGrade] = useState(submission.grade === null ? '' : String(submission.grade).replace('.', ','));
+  const [comment, setComment] = useState(submission.gradedBy === 'docente' ? (submission.justification ?? '') : '');
+  const [error, setError] = useState('');
+
+  const save = async () => {
+    const value = Number(grade.replace(',', '.'));
+    if (!grade.trim() || Number.isNaN(value) || value < 0 || value > 5) {
+      setError('La nota debe estar entre 0,0 y 5,0.');
+      return;
+    }
+    try {
+      await api('/api/submissions/grade', {
+        method: 'PUT',
+        body: { studentId, taskId, attempt: submission.attempt, grade: value, comment: comment.trim() || null },
+      });
+      onSaved();
+    } catch (caught) {
+      setError((caught as Error).message);
+    }
+  };
+
+  return (
+    <div className="mt-3 flex flex-col gap-2 border-t border-line pt-3">
+      <div className="grid gap-2 sm:grid-cols-[7rem_1fr_auto] sm:items-end">
+        <label className="flex flex-col gap-1 text-xs">
+          <span className="text-text-2">Nota (0,0–5,0)</span>
+          <input
+            value={grade}
+            onChange={(event) => setGrade(event.target.value)}
+            inputMode="decimal"
+            placeholder="4,5"
+            className="rounded-lg border border-line bg-bg-elev px-3 py-2 font-mono text-sm outline-none focus:border-cyan"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs">
+          <span className="text-text-2">Comentario para el estudiante (justifica la nota)</span>
+          <input
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            className="rounded-lg border border-line bg-bg-elev px-3 py-2 text-sm outline-none focus:border-cyan"
+          />
+        </label>
+        <button type="button" onClick={() => void save()} className="btn-primary px-4 py-2 text-sm">
+          Calificar
+        </button>
+      </div>
+      {error && <p className="text-xs text-coral-l">{error}</p>}
     </div>
   );
 }

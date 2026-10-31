@@ -15,7 +15,7 @@ interface Attempt {
   grade: number | null;
   justification: string | null;
   criteria: { criterio: string; cumple: 'si' | 'parcial' | 'no' }[] | null;
-  gradedBy: 'auto' | 'ia' | 'pendiente';
+  gradedBy: 'auto' | 'ia' | 'pendiente' | 'docente';
   items: boolean[] | null;
 }
 
@@ -81,7 +81,7 @@ export function TaskList() {
           <p>
             <strong className="text-text">{graded.length}</strong> de {tasks.length} tareas calificadas · 2 entregas por tarea, cuenta la mejor.
           </p>
-          <p>Las respuestas abiertas las califica la IA con la rúbrica; tu docente puede ajustar la nota.</p>
+          <p>Las respuestas abiertas las revisa y califica tu docente con la rúbrica.</p>
         </div>
         <div className="text-right">
           <p className="text-xs tracking-[0.18em] text-text-3 uppercase">Tu nota del tema</p>
@@ -247,7 +247,7 @@ function TaskCard({ task, canSubmit, onUpdated }: { task: Task; canSubmit: boole
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" onClick={() => void submit()} disabled={busy} className="btn-primary px-4 py-2 text-sm">
             {busy ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Send aria-hidden className="size-4" />}
-            {busy ? (task.tipo === 'abierta' ? 'Calificando con IA…' : 'Calificando…') : `Entregar (entrega ${task.attempts.length + 1} de 2)`}
+            {busy ? 'Enviando…' : `Entregar (entrega ${task.attempts.length + 1} de 2)`}
           </button>
           {task.attempts.length === 1 && <span className="text-xs text-text-3">Te queda una entrega: si mejoras, cuenta la mejor nota.</span>}
         </div>
@@ -285,6 +285,7 @@ function AttemptResult({ attempt }: { attempt: Attempt }) {
       <div className="flex items-center justify-between gap-3">
         <p className="font-semibold">
           Entrega {attempt.attempt}
+          {attempt.gradedBy === 'docente' && <span className="ml-2 text-xs font-normal text-cyan">calificada por tu docente</span>}
           {attempt.gradedBy === 'ia' && (
             <span className="ml-2 inline-flex items-center gap-1 text-xs font-normal text-violet">
               <Sparkles aria-hidden className="size-3.5" /> calificada por IA

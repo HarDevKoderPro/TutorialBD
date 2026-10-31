@@ -102,6 +102,15 @@ export const MIGRATIONS: { id: number; name: string; statements: string[] }[] = 
       )`,
     ],
   },
+  {
+    id: 4,
+    name: 'calificación del docente por entrega',
+    statements: [
+      `ALTER TABLE task_submissions
+        MODIFY graded_by ENUM('auto', 'ia', 'pendiente', 'docente') NOT NULL,
+        ADD COLUMN graded_at DATETIME NULL AFTER graded_by`,
+    ],
+  },
 ];
 
 export async function migrate(pool: Pool, log: (message: string) => void = () => undefined): Promise<void> {

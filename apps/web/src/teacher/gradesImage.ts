@@ -162,7 +162,7 @@ export async function renderGradesImage(input: { groupName: string; date: string
   ctx.textAlign = 'left';
   ctx.fillStyle = COLORS.text3;
   ctx.font = `14px ${FONT}`;
-  ctx.fillText('Notas de 0,0 a 5,0. Cada tarea cuenta su mejor entrega; las abiertas las califica la IA con rúbrica y el docente puede ajustarlas.', padding, y + 40);
+  ctx.fillText('Notas de 0,0 a 5,0. Cada tarea cuenta su mejor entrega; las respuestas abiertas las califica el docente con rúbrica.', padding, y + 40);
 
   return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('No se pudo generar la imagen'))), 'image/png'));
 }

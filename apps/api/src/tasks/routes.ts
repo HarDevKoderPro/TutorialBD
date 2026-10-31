@@ -8,6 +8,7 @@ import { gradeClosed } from './grading.js';
 import { buildStudentReport, taskGrade } from './report.js';
 
 export const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS_LIMIT = MAX_ATTEMPTS;
 
 export interface TasksDeps {
   catalog: TaskCatalog;
@@ -22,6 +23,13 @@ const overrideSchema = z.object({
   studentId: z.number().int().positive(),
   taskId: taskIdSchema,
   grade: z.number().min(0).max(5).nullable(),
+  comment: z.string().max(2000).nullable().optional(),
+});
+const submissionGradeSchema = z.object({
+  studentId: z.number().int().positive(),
+  taskId: taskIdSchema,
+  attempt: z.number().int().min(1).max(MAX_ATTEMPTS_LIMIT),
+  grade: z.number().min(0).max(5),
   comment: z.string().max(2000).nullable().optional(),
 });
 const attendanceSchema = z.object({
@@ -71,7 +79,7 @@ async function grade(task: Task, answer: unknown, aiGrader: AiGrader | null, log
     return { grade: result.grade, justification: result.justification, criteria: null, gradedBy: 'auto' as const };
   }
   if (!aiGrader) {
-    return { grade: null, justification: 'Tu docente calificará esta respuesta.', criteria: null, gradedBy: 'pendiente' as const };
+    return { grade: null, justification: 'Tu docente revisará y calificará esta respuesta.', criteria: null, gradedBy: 'pendiente' as const };
   }
   try {
     const result = await aiGrader.grade(task, String(answer));
@@ -174,6 +182,15 @@ export function registerTasks(app: FastifyInstance, deps: TasksDeps): void {
     if (!(await grades.studentInTeacherGroups(request.user!.id, studentId))) return reply.code(404).send({ error: 'Estudiante no encontrado.' });
     await grades.setOverride(studentId, taskId, value === null ? null : Math.round(value * 10) / 10, comment?.trim() || null);
     return { ok: true };
+  });
+
+  // Calificación del docente sobre una entrega (respuestas abiertas)
+  app.put('/api/submissions/grade', teacher, async (request, reply) => {
+    const parsed = submissionGradeSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: firstIssue(parsed.error) });
+    const { studentId, taskId, attempt, grade: value, comment } = parsed.data;
+    const updated = await grades.gradeSubmission(request.user!.id, studentId, taskId, attempt, Math.round(value * 10) / 10, comment?.trim() || null);
+    return updated ? { ok: true } : reply.code(404).send({ error: 'No se encontró esa entrega en tus grupos.' });
   });
 
   // ---------- docente: asistencia ----------

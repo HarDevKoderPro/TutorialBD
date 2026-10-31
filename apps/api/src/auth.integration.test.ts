@@ -34,15 +34,14 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
     await migrate(pool);
     await migrate(pool); // idempotente
     store = new Store(pool);
-    // Calificador de IA simulado: no llama a la API real en las pruebas
-    const aiGrader = { grade: async () => ({ grade: 4.2, justification: 'Buen análisis; faltó una FK.', criteria: [] }) };
     const catalog = loadTasks(fileURLToPath(new URL('../../../content', import.meta.url)));
     app = await buildApp({
       commit: 'test',
       buildDate: '',
       checkDatabases: async () => ({ app: 'ok', sandbox: 'ok' }),
       store,
-      tasks: { catalog, grades: new GradesStore(pool), aiGrader },
+      // Sin IA: las respuestas abiertas las califica el docente
+      tasks: { catalog, grades: new GradesStore(pool), aiGrader: null },
     });
     await store.createUser({ username: 'profe', fullName: 'Docente de prueba', role: 'docente', passwordHash: await hashPassword('clave-docente'), groupId: null });
   });
@@ -128,7 +127,7 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
     expect(forbidden.statusCode).toBe(403);
   });
 
-  it('tareas: dos entregas, la mejor cuenta; IA en abiertas; ajuste del docente, asistencia y definitiva', async () => {
+  it('tareas: dos entregas, la mejor cuenta; el docente califica las abiertas; asistencia y definitiva', async () => {
     const teacher = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'profe', password: 'clave-docente' } })).headers['set-cookie']);
     const student = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'laura', password: 'clave-laura' } })).headers['set-cookie']);
     const studentId = (await app.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: student } })).json().user.id;
@@ -148,15 +147,20 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
     expect((await submit('T1-PB1', ['x', 'x', 'x', 'x'])).statusCode).toBe(409);
 
     const open = await submit('T1-PI1', 'categoria: id_categoria INT PK, nombre VARCHAR…');
-    expect(open.json().task.attempts[0]).toMatchObject({ grade: 4.2, gradedBy: 'ia' });
+    expect(open.json().task.attempts[0]).toMatchObject({ grade: null, gradedBy: 'pendiente' });
 
-    const override = await app.inject({
+    const graded = await app.inject({
       method: 'PUT',
-      url: '/api/grades/override',
+      url: '/api/submissions/grade',
       headers: { cookie: teacher },
-      payload: { studentId, taskId: 'T1-PI1', grade: 3.5, comment: 'Faltó justificar los tipos.' },
+      payload: { studentId, taskId: 'T1-PI1', attempt: 1, grade: 3.5, comment: 'Faltó justificar los tipos.' },
     });
-    expect(override.statusCode).toBe(200);
+    expect(graded.statusCode).toBe(200);
+    const mine = await app.inject({ method: 'GET', url: '/api/tasks/01-conceptos-basicos', headers: { cookie: student } });
+    const pi1 = mine.json().tasks.find((t: { id: string }) => t.id === 'T1-PI1');
+    expect(pi1.attempts[0]).toMatchObject({ grade: 3.5, gradedBy: 'docente', justification: 'Faltó justificar los tipos.' });
+    // El estudiante no puede calificarse
+    expect((await app.inject({ method: 'PUT', url: '/api/submissions/grade', headers: { cookie: student }, payload: { studentId, taskId: 'T1-PI1', attempt: 1, grade: 5 } })).statusCode).toBe(403);
 
     const day = { date: '2026-11-03', records: { [studentId]: 'presente' } };
     expect((await app.inject({ method: 'PUT', url: `/api/groups/${groupId}/attendance`, headers: { cookie: teacher }, payload: day })).statusCode).toBe(200);

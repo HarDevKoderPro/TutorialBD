@@ -8,6 +8,8 @@ export interface TaskGrade {
   grade: number | null;
   source: 'auto' | 'ia' | 'docente' | 'pendiente';
   attempts: number;
+  // Entregas sin calificar (las abiertas las califica el docente)
+  pending: number;
   justification: string | null;
 }
 
@@ -32,14 +34,16 @@ function firstSentence(text: string | null): string {
 
 export function taskGrade(submissions: Submission[], override: Override | undefined): TaskGrade {
   const graded = submissions.filter((submission) => submission.grade !== null);
+  const pending = submissions.length - graded.length;
   if (override) {
-    return { grade: override.grade, source: 'docente', attempts: submissions.length, justification: override.comment ?? 'Nota ajustada por el docente.' };
+    return { grade: override.grade, source: 'docente', attempts: submissions.length, pending, justification: override.comment ?? 'Nota ajustada por el docente.' };
   }
   if (graded.length === 0) {
-    return { grade: null, source: submissions.length ? 'pendiente' : 'pendiente', attempts: submissions.length, justification: null };
+    return { grade: null, source: 'pendiente', attempts: submissions.length, pending, justification: null };
   }
   const best = graded.reduce((a, b) => ((b.grade ?? 0) > (a.grade ?? 0) ? b : a));
-  return { grade: best.grade, source: best.gradedBy === 'ia' ? 'ia' : 'auto', attempts: submissions.length, justification: best.justification };
+  const source = best.gradedBy === 'docente' ? 'docente' : best.gradedBy === 'ia' ? 'ia' : 'auto';
+  return { grade: best.grade, source, attempts: submissions.length, pending, justification: best.justification };
 }
 
 export function attendanceOf(counts: Record<AttendanceStatus, number> | undefined) {
@@ -67,7 +71,8 @@ export function buildStudentReport(
   const withGrade = Object.entries(grades).filter(([, value]) => value.grade !== null) as [string, TaskGrade & { grade: number }][];
   const definitive = withGrade.length ? Math.round((withGrade.reduce((sum, [, value]) => sum + value.grade, 0) / withGrade.length) * 10) / 10 : null;
 
-  let comment = 'Aún no ha entregado tareas.';
+  const pendingTotal = Object.values(grades).reduce((sum, value) => sum + value.pending, 0);
+  let comment = pendingTotal ? `Tiene ${pendingTotal} entrega(s) por calificar.` : 'Aún no ha entregado tareas.';
   if (definitive !== null) {
     const weakest = withGrade.reduce((a, b) => (b[1].grade < a[1].grade ? b : a));
     const best = withGrade.reduce((a, b) => (b[1].grade > a[1].grade ? b : a));
@@ -78,8 +83,7 @@ export function buildStudentReport(
     } else {
       comment += ` Mejor resultado: ${best[0]} (${formatGrade(best[1].grade)}).`;
     }
-    const pending = Object.values(grades).filter((value) => value.grade === null).length;
-    if (pending) comment += ` ${pending} pendiente(s) de calificar.`;
+    if (pendingTotal) comment += ` ${pendingTotal} entrega(s) por calificar.`;
   }
 
   return {

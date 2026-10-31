@@ -49,9 +49,10 @@ describe('buildStudentReport', () => {
     expect(report.comment).toBe('Aún no ha entregado tareas.');
   });
 
-  it('una tarea pendiente de la IA no cuenta en el promedio', () => {
+  it('una entrega por calificar no cuenta en el promedio', () => {
     const report = buildStudentReport(student, ['T1-PB1', 'T1-PI1'], [submission('T1-PB1', 1, 3), submission('T1-PI1', 1, null)], [], undefined);
     expect(report.definitive).toBe(3);
-    expect(report.comment).toContain('1 pendiente(s) de calificar');
+    expect(report.comment).toContain('1 entrega(s) por calificar');
+    expect(report.grades['T1-PI1']).toMatchObject({ grade: null, pending: 1 });
   });
 });
