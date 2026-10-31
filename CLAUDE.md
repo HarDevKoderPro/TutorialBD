@@ -49,7 +49,7 @@ _(mantener esta sección actualizada)_
 - `npm run test:ejercicios` — _(pendiente, Etapa 3)_ ejecuta todas las soluciones de `content/` contra MySQL
 
 ## Despliegue
-- Push a `main` → GitHub Actions (`.github/workflows/deploy.yml`) verifica y despliega en el VPS → https://sql.smarteksoft.com. El pie de página muestra el commit publicado.
+- Push a `main` → GitHub Actions (`.github/workflows/deploy.yml`) verifica y despliega en el VPS → https://sql.smarteksoft.com. El commit publicado se consulta en `/api/health` (no se muestra en la interfaz).
 - En el VPS: `/opt/apps/tutorialbd`, `scripts/deploy.sh` (comando forzado de la llave de Actions), bloque de Caddy en `infra/caddy/`.
 
 ## Reglas del proyecto

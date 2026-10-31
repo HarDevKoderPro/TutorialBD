@@ -11,7 +11,12 @@ export function App() {
   const health = useHealth();
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-6 py-10">
+    // La versión publicada no se muestra; queda como atributo para verificarla (y en /api/health)
+    <div
+      className="mx-auto flex min-h-screen max-w-5xl flex-col px-6 py-10"
+      data-version={__APP_COMMIT__}
+      data-build-date={__APP_BUILD_DATE__}
+    >
       <header className="flex items-center gap-3">
         <img src="/favicon.svg" alt="" className="size-9" />
         <span className="font-semibold tracking-tight">SQL desde cero</span>
@@ -41,11 +46,8 @@ export function App() {
         <ServiceStatus health={health} />
       </main>
 
-      <footer className="flex flex-wrap justify-between gap-2 border-t border-white/10 pt-4 font-mono text-xs text-text-3">
-        <span>SQL desde cero · Aprende bases de datos en el navegador</span>
-        <span title={__APP_BUILD_DATE__}>
-          versión {__APP_COMMIT__} · {formatDate(__APP_BUILD_DATE__)}
-        </span>
+      <footer className="border-t border-white/10 pt-4 font-mono text-xs text-text-3">
+        SQL desde cero · Aprende bases de datos en el navegador
       </footer>
     </div>
   );
@@ -83,14 +85,4 @@ function ServiceStatus({ health }: { health: Health | null | 'offline' }) {
       </ul>
     </section>
   );
-}
-
-function formatDate(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString('es-CO', {
-    timeZone: 'America/Bogota',
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
 }
