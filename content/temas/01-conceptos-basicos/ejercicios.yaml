@@ -1,0 +1,108 @@
+# Ejercicios del Tema 1 (docs/temario.md y presentación del tema).
+# tipo: respuestas | clasificar | seleccion | abierta
+#   respuestas/clasificar/seleccion se califican al instante; abierta muestra rúbrica y referencia al entregar.
+# La solución se habilita tras 3 intentos fallidos.
+ejercicios:
+  - id: T1-B1
+    nivel: basico
+    objetivo: "Reconocer los elementos de una tabla."
+    enunciado: "Observa la tabla `estudiantes` y responde."
+    tabla:
+      nombre: estudiantes
+      columnas: [documento, nombre, grupo]
+      filas:
+        - ["1012345", "Sara León", "2758"]
+        - ["1023456", "Juan Pérez", "2758"]
+        - ["1034567", "Ana Mora", "2759"]
+        - ["1045678", "Luis Rojas", "2758"]
+        - ["1056789", "Eva Díaz", "2759"]
+    tipo: respuestas
+    preguntas:
+      - pregunta: "Nombre de la tabla"
+        aceptadas: ["estudiantes"]
+      - pregunta: "Sus campos (sepáralos con comas)"
+        aceptadas: ["documento, nombre, grupo"]
+        lista: true
+      - pregunta: "¿Cuántos registros tiene?"
+        aceptadas: ["5", "cinco"]
+      - pregunta: "Valor de grupo para Ana Mora"
+        aceptadas: ["2759"]
+    pistas:
+      - "Los campos son las columnas; los registros son las filas."
+      - "Para el último dato, busca la fila de Ana Mora y mira la columna grupo."
+
+  - id: T1-B2
+    nivel: basico
+    objetivo: "Diferenciar dato e información."
+    enunciado: "Clasifica cada expresión como dato o información."
+    tipo: clasificar
+    opciones: [Dato, Información]
+    items:
+      - texto: "Bogotá"
+        respuesta: Dato
+      - texto: "El grupo 2758 tiene 32 estudiantes"
+        respuesta: Información
+      - texto: "15"
+        respuesta: Dato
+      - texto: "El producto más vendido fue el mouse"
+        respuesta: Información
+    pistas:
+      - "Un dato es un valor suelto; la información tiene contexto y permite tomar decisiones."
+
+  - id: T1-I1
+    nivel: intermedio
+    objetivo: "Diseñar los campos de una tabla."
+    enunciado: "Para **producto** y **proveedor**, propone 4–5 campos con su tipo de dato y elige la clave primaria de cada uno."
+    aviso: "Justifica cada tipo de dato."
+    tipo: abierta
+    rubrica:
+      - "Cada tabla tiene entre 4 y 5 campos con sentido para el negocio."
+      - "Cada campo tiene un tipo de dato adecuado (INT, DECIMAL, VARCHAR, DATE, BOOLEAN) y su justificación."
+      - "Cada tabla tiene una clave primaria que no se repite ni cambia."
+    referencia: |
+      Ejemplo de respuesta (hay varias correctas):
+      producto: id_producto INT (PK, consecutivo), nombre VARCHAR (texto), precio DECIMAL (dinero con decimales), stock INT (cantidad entera), activo BOOLEAN (sí/no).
+      proveedor: id_proveedor INT (PK, consecutivo), nit VARCHAR (no se opera con él), nombre VARCHAR, telefono VARCHAR (puede empezar en 0 y no se suma), ciudad VARCHAR.
+
+  - id: T1-I2
+    nivel: intermedio
+    objetivo: "Elegir una buena PK."
+    enunciado: "¿Cuál es mejor clave primaria para un cliente?"
+    aviso: "Piensa: ¿puede repetirse? ¿puede cambiar?"
+    tipo: seleccion
+    opciones: [Nombre, Teléfono, Correo, Número consecutivo]
+    correcta: Número consecutivo
+    explicacion: "Un número consecutivo (o el documento) no se repite ni cambia. Dos clientes pueden llamarse igual, y el teléfono y el correo cambian con el tiempo."
+    pistas:
+      - "Una PK identifica cada registro para siempre: no puede repetirse ni cambiar."
+
+  - id: T1-A1
+    nivel: avanzado
+    objetivo: "Preparar el terreno para el DER y la normalización."
+    enunciado: "Reto: ¿qué tablas se esconden aquí? La planilla `prestamos_biblioteca` tiene todo mezclado en una sola hoja."
+    aviso: "Todavía sin SQL. Resuélvelo en papel o en una hoja de cálculo."
+    tabla:
+      nombre: prestamos_biblioteca
+      columnas: [libro, autor, lector, tel_lector, fecha]
+      filas:
+        - ["Cien años de soledad", "G. García Márquez", "Sara León", "3001112233", "2026-03-02"]
+        - ["El coronel no tiene quien le escriba", "G. García Márquez", "Juan Pérez", "3124445566", "2026-03-04"]
+        - ["La vorágine", "J. E. Rivera", "Sara León", "3001112233", "2026-03-09"]
+        - ["Cien años de soledad", "G. García Márquez", "Ana Mora", "3157778899", "2026-03-11"]
+        - ["María", "Jorge Isaacs", "Juan Pérez", "3124445566", "2026-03-15"]
+    tipo: abierta
+    preguntas_guia:
+      - "¿Qué datos se repiten y qué problema causa?"
+      - "¿Qué tablas deberían existir?"
+      - "¿Cuál sería la PK de cada una?"
+      - "¿Qué campo las uniría?"
+    rubrica:
+      - "Identifica los datos repetidos (autor, lector y su teléfono) y el problema de corregirlos en varias filas."
+      - "Propone tablas separadas para autores, libros, lectores y préstamos."
+      - "Elige una PK para cada tabla."
+      - "Identifica las claves foráneas que unen las tablas."
+    referencia: |
+      Se repiten el autor de cada libro y el lector con su teléfono: si Sara cambia de teléfono hay que corregirlo en varias filas, y si se olvida una, los datos se contradicen.
+      Tablas: autores, libros, lectores y prestamos.
+      PK: id_autor, id_libro, id_lector, id_prestamo.
+      Uniones: prestamos tiene id_libro e id_lector (FK); libros tiene id_autor (FK).

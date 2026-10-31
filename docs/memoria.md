@@ -19,7 +19,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 | Etapa | Estado |
 |---|---|
 | 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
-| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (publicada, probada en producción) · 1.3 ejercicios · 1.4 grupos y panel docente |
+| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (aprobada) · 1.3 ejercicios (publicados, pendientes de aprobación) · 1.4 grupos y panel docente |
 
 ## Estado del contenido
 | Tema | Estado |
@@ -50,6 +50,11 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - Tema 7: `UPDATE productos SET precio = 0;` "sin safe updates" no produce el desastre esperado: `chk_productos_precio` lo rechaza con 3819. Propuesta: usar `UPDATE productos SET stock = 0;`.
 - Tema 3: el caso base dice que Laura Gómez tiene 3 pedidos en la planilla, pero el CSV tiene 2; y la 3FN se explica con la descripción de la categoría, columna que la planilla no tiene. Propuesta: agregar la fila del pedido 10 y la columna `descripcion_categoria`.
 - Tema 1: el primer script no tiene `USE` (daría 1046) y su `clientes` difiere de la de TecnoTienda. Resuelto por diseño: la consola del Tema 1 abre en la base `practica`.
+
+## Contenido redactado por Claude (pendiente de aprobación del docente)
+- Tema 1, `ejercicios.yaml`: pistas de T1-B1, T1-B2 y T1-I2; respuesta de referencia de ejemplo de T1-I1 (el temario no la trae); primera frase de la referencia de T1-A1 (qué se repite y por qué es un problema); rúbricas de T1-I1 y T1-A1.
+- `content/errores.yaml`: explicaciones de los 20 errores del catálogo.
+- Avance de ejercicios guardado por ahora en el navegador (localStorage); se sincronizará con el servidor en la entrega 1.4.
 
 ## Pendientes / preguntas abiertas
 - Aislamiento de la consola: mapeo de nombres vs. contenedor por estudiante (Etapa 3).
