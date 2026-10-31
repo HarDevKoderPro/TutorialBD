@@ -159,7 +159,7 @@ function GroupDetail({ group, onToggleActive }: { group: Group; onToggleActive: 
       <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold">{group.name}</h2>
-          <p className="text-sm text-text-2">{students ? `${students.length} estudiantes registrados` : 'Cargando…'}</p>
+          <p className="text-sm text-text-2">{students ? `${students.length} ${students.length === 1 ? 'estudiante registrado' : 'estudiantes registrados'}` : 'Cargando…'}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 rounded-lg border border-line bg-bg-code px-4 py-2">
