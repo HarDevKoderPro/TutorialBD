@@ -19,7 +19,19 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 | Etapa | Estado |
 |---|---|
 | 0 · Base y despliegue continuo | **Cerrada 2026-10-31**: push a `main` → CI → despliegue en https://sql.smarteksoft.com verificado de punta a punta (run 41174860351) |
-| 1 · Tema 1 | En curso: 1.1 ruta + lección interactiva (publicada) · 1.2 consola (aprobada) · 1.3 ejercicios (publicados) · 1.4 ingreso por grupo y panel docente (publicado, pendiente de prueba del docente) |
+| 1 · Tema 1 | Casi cerrada: 1.1 lección (aprobada) · 1.2 consola (aprobada) · 1.3 ejercicios de ejemplo (publicados) · 1.4 ingreso por grupo y panel docente (aprobado) · 1.5 tareas calificables, notas, asistencia, imagen y WhatsApp (publicado en `886d184`, **pendiente de prueba del docente**) |
+
+## Punto de retoma (2026-10-31)
+**Dónde quedamos:** publicada la versión `886d184` en https://sql.smarteksoft.com. El docente (cuenta `sharkcoder`, grupo «Base Datos - Compucec», código `QDLFXU`, estudiante de prueba `juliqui`) debe probar: entregar T1-PB1 y T1-PI1 como estudiante → en el panel, Notas → «Calificar la siguiente» → Generar imagen → Compartir por WhatsApp, y enviar captura.
+
+**Siguientes pasos, en orden:**
+1. Aprobación del docente de la entrega 1.5 (tareas calificables sin IA).
+2. **Pasar el repositorio a privado** (`tareas.yaml` expone respuestas): repo privado en GitHub + llave de despliegue de solo lectura para que el VPS haga `git fetch` (el docente agrega la llave en GitHub; los cambios a `~/.ssh` del VPS los confirma él).
+3. Cierre de la Etapa 1: copias de seguridad diarias de `aula_app` (script + línea de cron que agrega el docente) y prueba de carga de 35 consolas (grupo temporal que se borra al final).
+4. Aprobación de los textos redactados por Claude (sección de abajo).
+5. Etapa 2: Tema 2 (Modelo entidad-relación).
+
+**Forma de trabajo acordada:** el docente quiere pasos cortos, uno a la vez, y aprueba con capturas. Claude hace commit y push por su cuenta al cerrar cada tarea con pruebas pasando; el despliegue es automático. Acceso al VPS: el docente desbloquea la llave en Git Bash local con `ssh-agent -a ~/.ssh/claude-agent.sock`; Claude no puede agregar llaves a `authorized_keys` ni tocar el crontab sin que el docente lo haga.
 
 ## Estado del contenido
 | Tema | Estado |
@@ -61,7 +73,6 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 ## Pendientes / preguntas abiertas
 - **Repositorio público**: `tareas.yaml` (con respuestas) queda visible en GitHub. Recomendado: pasar el repo a privado y dar al VPS una llave de solo lectura.
 - Aislamiento de la consola: mapeo de nombres vs. contenedor por estudiante (Etapa 3).
-- Repositorio `HarDevKoderPro/TutorialBD` es público: decidir si pasa a privado antes de subir `proyecto-final/referencia`.
 - ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`)?
 - Copia cifrada de respaldos con rclone (remoto `tutorialbd-crypt:`).
 - Limpieza automática de sandboxes sin uso (usuarios `u_*` y bases `sbx_*` de sesiones abandonadas).
