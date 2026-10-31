@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import { ArrowLeft, ArrowRight, Clock } from 'lucide-react';
 import { Link, useParams } from 'react-router';
+import { ConsoleProvider } from '../console/ConsoleContext';
 import { findTopic, type Lesson, loadLesson, nextTopic } from '../content/route';
 import { BLOCK_LABELS } from '../content/schema';
 import { mdxComponents } from '../lesson/mdxComponents';
@@ -53,9 +54,11 @@ export function LessonPage() {
         </header>
 
         <div data-lesson-content>
-          <MDXProvider components={mdxComponents}>
-            <Content />
-          </MDXProvider>
+          <ConsoleProvider>
+            <MDXProvider components={mdxComponents}>
+              <Content />
+            </MDXProvider>
+          </ConsoleProvider>
         </div>
 
         {next && (

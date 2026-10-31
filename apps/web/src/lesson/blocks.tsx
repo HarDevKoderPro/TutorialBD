@@ -1,5 +1,6 @@
 import { Children, isValidElement, type ReactElement, type ReactNode, useState } from 'react';
-import { Check, ChevronRight, Clock, Copy, Lock, TriangleAlert } from 'lucide-react';
+import { Check, ChevronRight, Clock, Copy, Lock, Play, TriangleAlert } from 'lucide-react';
+import { useConsoleRunner } from '../console/ConsoleContext';
 import { ACCENTS, type Accent } from '../ui/accent';
 import { highlightSql, type TokenKind } from './highlightSql';
 
@@ -136,6 +137,7 @@ export function CodeBlock({ children }: { children?: ReactNode }) {
   const source = (code?.props.children ?? '').replace(/\n$/, '');
   const language = code?.props.className?.replace('language-', '') ?? '';
   const [copied, setCopied] = useState(false);
+  const runInConsole = useConsoleRunner();
 
   const copy = async () => {
     await navigator.clipboard.writeText(source);
@@ -147,6 +149,16 @@ export function CodeBlock({ children }: { children?: ReactNode }) {
     <div className="max-w-3xl overflow-hidden rounded-[18px] border border-white/10 bg-bg-code">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
         <span className="font-mono text-xs tracking-[0.2em] text-cyan uppercase">{language || 'código'}</span>
+        <div className="flex items-center gap-1">
+        {language === 'sql' && runInConsole && (
+          <button
+            type="button"
+            onClick={() => runInConsole(source)}
+            className="flex items-center gap-1.5 rounded-md bg-green/15 px-2.5 py-1 text-xs font-semibold text-green-l transition hover:bg-green/25"
+          >
+            <Play aria-hidden className="size-3.5" /> Ejecutar
+          </button>
+        )}
         <button
           type="button"
           onClick={copy}
@@ -155,6 +167,7 @@ export function CodeBlock({ children }: { children?: ReactNode }) {
           {copied ? <Check aria-hidden className="size-3.5 text-green" /> : <Copy aria-hidden className="size-3.5" />}
           {copied ? 'Copiado' : 'Copiar'}
         </button>
+        </div>
       </div>
       <pre className="overflow-x-auto p-4 font-mono text-sm leading-relaxed">
         <code>

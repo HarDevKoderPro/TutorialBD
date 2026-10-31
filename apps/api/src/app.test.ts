@@ -3,7 +3,7 @@ import { buildApp } from './app.js';
 
 describe('GET /api/health', () => {
   it('responde 200 con versión cuando ambas bases están disponibles', async () => {
-    const app = buildApp({
+    const app = await buildApp({
       commit: 'abc1234',
       buildDate: '2026-10-31T00:00:00Z',
       checkDatabases: async () => ({ app: 'ok', sandbox: 'ok' }),
@@ -21,7 +21,7 @@ describe('GET /api/health', () => {
   });
 
   it('responde 503 si alguna base no está disponible', async () => {
-    const app = buildApp({
+    const app = await buildApp({
       commit: 'abc1234',
       buildDate: '2026-10-31T00:00:00Z',
       checkDatabases: async () => ({ app: 'ok', sandbox: 'error' }),

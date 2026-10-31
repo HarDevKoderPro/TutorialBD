@@ -23,3 +23,13 @@ describe('content/ruta.yaml', () => {
     }
   });
 });
+
+describe('content/errores.yaml', () => {
+  it('cumple el esquema y no repite códigos', async () => {
+    const { errorCatalogSchema } = await import('./errors.schema');
+    const catalog = errorCatalogSchema.parse(parse(readFileSync(`${contentDir}/errores.yaml`, 'utf8')));
+    const codes = catalog.errores.map((entry) => entry.codigo);
+    expect(new Set(codes).size).toBe(codes.length);
+    expect(codes).toContain(1062);
+  });
+});

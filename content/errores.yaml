@@ -1,0 +1,83 @@
+# Errores de MySQL explicados en lenguaje sencillo. La consola muestra la tarjeta según el código.
+# Editable por el docente: titulo (corto), que_paso y como_corregir (una o dos frases cada uno).
+errores:
+  - codigo: 1062
+    titulo: "Valor repetido en una clave"
+    que_paso: "Intentaste guardar un valor que ya existe en una columna que no admite repetidos (una PRIMARY KEY o UNIQUE)."
+    como_corregir: "Usa otro valor para esa columna. Si es la clave primaria, cada registro necesita un número distinto."
+  - codigo: 1064
+    titulo: "Error de escritura (sintaxis)"
+    que_paso: "El SGBD no entendió la instrucción. El mensaje dice \"near …\" justo donde se confundió."
+    como_corregir: "Revisa ese punto: comas, paréntesis, comillas y palabras mal escritas. Compara con el ejemplo."
+  - codigo: 1054
+    titulo: "Columna desconocida"
+    que_paso: "Usaste un nombre de columna que no existe en la tabla, o escribiste un texto sin comillas."
+    como_corregir: "Revisa la ortografía con DESCRIBE tabla; y pon los textos entre comillas simples ('Bogotá')."
+  - codigo: 1146
+    titulo: "La tabla no existe"
+    que_paso: "Consultaste una tabla que todavía no se ha creado, o su nombre está mal escrito."
+    como_corregir: "Revisa las tablas con SHOW TABLES; y crea la tabla antes de usarla."
+  - codigo: 1050
+    titulo: "La tabla ya existe"
+    que_paso: "Intentaste crear una tabla con un nombre que ya está en uso."
+    como_corregir: "Usa otro nombre, o si quieres empezar de cero usa el botón «Reiniciar base»."
+  - codigo: 1046
+    titulo: "No hay una base seleccionada"
+    que_paso: "El SGBD no sabe en qué base de datos trabajar."
+    como_corregir: "Selecciona la base con: USE practica;"
+  - codigo: 1048
+    titulo: "Falta un dato obligatorio"
+    que_paso: "Dejaste vacía (NULL) una columna marcada como NOT NULL."
+    como_corregir: "Envía un valor para esa columna."
+  - codigo: 1136
+    titulo: "No coincide el número de valores"
+    que_paso: "La cantidad de valores en VALUES no coincide con la cantidad de columnas de la tabla."
+    como_corregir: "Envía un valor por cada columna, en el mismo orden, o nombra las columnas que vas a llenar."
+  - codigo: 1292
+    titulo: "Valor con formato incorrecto"
+    que_paso: "Un valor no tiene el formato que espera la columna; por ejemplo, una fecha que no está como 'AAAA-MM-DD'."
+    como_corregir: "Escribe las fechas como '2026-01-15' y los decimales con punto."
+  - codigo: 1366
+    titulo: "Valor no válido para la columna"
+    que_paso: "Enviaste un texto donde la columna espera un número (o al revés)."
+    como_corregir: "Revisa el tipo de dato de la columna con DESCRIBE tabla; y envía un valor de ese tipo."
+  - codigo: 1406
+    titulo: "Texto demasiado largo"
+    que_paso: "El texto tiene más caracteres de los que permite la columna (por ejemplo, VARCHAR(50))."
+    como_corregir: "Acorta el texto o amplía la longitud de la columna."
+  - codigo: 1452
+    titulo: "La referencia no existe (FK)"
+    que_paso: "Usaste un valor de clave foránea que no existe en la tabla a la que apunta."
+    como_corregir: "Primero crea el registro en la tabla padre, o usa un id que ya exista."
+  - codigo: 1451
+    titulo: "El registro tiene datos que dependen de él"
+    que_paso: "Intentaste borrar o cambiar un registro que otra tabla está usando a través de una clave foránea."
+    como_corregir: "Borra o cambia primero los registros que lo referencian, o usa un borrado lógico."
+  - codigo: 3819
+    titulo: "No cumple una regla (CHECK)"
+    que_paso: "El valor no cumple una restricción CHECK de la tabla; por ejemplo, un precio negativo."
+    como_corregir: "Envía un valor que cumpla la regla indicada en el mensaje."
+  - codigo: 1175
+    titulo: "Modo seguro activado"
+    que_paso: "El modo seguro bloquea UPDATE o DELETE sin un WHERE que use una clave."
+    como_corregir: "Agrega un WHERE que identifique los registros, por ejemplo por su id."
+  - codigo: 1824
+    titulo: "La tabla padre no existe"
+    que_paso: "Creaste una clave foránea que apunta a una tabla que todavía no existe."
+    como_corregir: "Crea primero la tabla padre (la que no tiene FK) y luego la hija."
+  - codigo: 3730
+    titulo: "Otra tabla depende de esta"
+    que_paso: "Intentaste borrar una tabla que otra tabla referencia con una clave foránea."
+    como_corregir: "Borra primero la tabla hija, o elimina su clave foránea."
+  - codigo: 1317
+    titulo: "Instrucción cancelada"
+    que_paso: "La instrucción se detuvo, porque presionaste Ctrl+C o porque tardó más de 5 segundos."
+    como_corregir: "Revisa si la consulta es demasiado grande o si le falta un WHERE."
+  - codigo: 3024
+    titulo: "La consulta tardó demasiado"
+    que_paso: "La consulta superó el tiempo máximo de 5 segundos de la consola."
+    como_corregir: "Agrega filtros (WHERE) o LIMIT para traer menos datos."
+  - codigo: 1044
+    titulo: "Sin permiso sobre esa base"
+    que_paso: "En la consola del curso solo puedes trabajar en tu propia base."
+    como_corregir: "Vuelve a tu base con: USE practica;"

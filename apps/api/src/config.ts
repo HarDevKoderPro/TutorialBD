@@ -13,6 +13,8 @@ export interface Config {
   host: string;
   commit: string;
   buildDate: string;
+  // Secreto para derivar el usuario y la contraseña de cada sandbox
+  sessionSecret: string;
   appDb: DbConfig;
   sandboxDb: DbConfig;
 }
@@ -31,6 +33,7 @@ export function loadConfig(): Config {
     host: process.env.HOST ?? '0.0.0.0',
     commit: process.env.GIT_COMMIT ?? 'dev',
     buildDate: process.env.BUILD_DATE ?? new Date().toISOString(),
+    sessionSecret: required('SBX_SESSION_SECRET'),
     appDb: {
       host: process.env.APP_DB_HOST ?? 'mysql-app',
       port: Number(process.env.APP_DB_PORT ?? 3306),
