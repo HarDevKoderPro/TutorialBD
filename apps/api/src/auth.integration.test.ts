@@ -90,6 +90,32 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
     expect((await app.inject({ method: 'GET', url: '/api/groups' })).statusCode).toBe(401);
   });
 
+  it('el docente aprueba una respuesta abierta; si el estudiante la cambia, vuelve a quedar pendiente', async () => {
+    const teacher = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'profe', password: 'clave-docente' } })).headers['set-cookie']);
+    const student = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'laura', password: 'clave-laura' } })).headers['set-cookie']);
+    const submit = (answer: string) =>
+      app.inject({ method: 'PUT', url: '/api/progress/T1-I1', headers: { cookie: student }, payload: { status: 'submitted', attempts: 1, answer } });
+    const studentId = (await app.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: student } })).json().user.id;
+    const myReview = async () => (await app.inject({ method: 'GET', url: '/api/progress', headers: { cookie: student } })).json().progress['T1-I1'];
+
+    await submit('producto: id_producto INT (PK)…');
+    const review = await app.inject({
+      method: 'PUT',
+      url: '/api/reviews',
+      headers: { cookie: teacher },
+      payload: { studentId, exerciseId: 'T1-I1', review: 'aprobado', comment: 'Muy bien justificado' },
+    });
+    expect(review.statusCode).toBe(200);
+    expect(await myReview()).toMatchObject({ review: 'aprobado', reviewComment: 'Muy bien justificado' });
+
+    await submit('producto: id_producto INT (PK)… (corregido)');
+    expect(await myReview()).toMatchObject({ review: null, reviewComment: null });
+
+    // El estudiante no puede revisar
+    const forbidden = await app.inject({ method: 'PUT', url: '/api/reviews', headers: { cookie: student }, payload: { studentId, exerciseId: 'T1-I1', review: 'aprobado' } });
+    expect(forbidden.statusCode).toBe(403);
+  });
+
   it('un grupo cerrado no admite registros y la contraseña errada no entra', async () => {
     const teacher = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'profe', password: 'clave-docente' } })).headers['set-cookie']);
     await app.inject({ method: 'PATCH', url: `/api/groups/${groupId}`, headers: { cookie: teacher }, payload: { active: false } });

@@ -17,6 +17,8 @@ interface StudentProgress {
   status: 'attempted' | 'correct' | 'submitted';
   attempts: number;
   answer: string | null;
+  review: 'aprobado' | 'por_mejorar' | null;
+  reviewComment: string | null;
   updatedAt: string;
 }
 
@@ -232,12 +234,30 @@ function GroupDetail({ group, onToggleActive }: { group: Group; onToggleActive: 
 
       <p className="flex flex-wrap gap-4 text-xs text-text-3">
         <span className="text-neon-ok">✓ correcto</span>
-        <span className="text-cyan">● entregado (clic para leer)</span>
+        <span className="text-cyan">● por revisar (clic)</span>
+        <span className="text-amber">↺ por mejorar</span>
         <span className="text-coral-l">✗ intentos sin acertar</span>
         <span>· sin empezar</span>
       </p>
 
-      {viewing && <AnswerPanel {...viewing} onClose={() => setViewing(null)} />}
+      {viewing && (
+        <AnswerPanel
+          key={`${viewing.student.id}-${viewing.exercise.id}`}
+          {...viewing}
+          onClose={() => setViewing(null)}
+          onReviewed={(review, comment) => {
+            const { student, exercise } = viewing;
+            setStudents((list) =>
+              (list ?? []).map((item) =>
+                item.id === student.id
+                  ? { ...item, progress: { ...item.progress, [exercise.id]: { ...item.progress[exercise.id]!, review, reviewComment: comment } } }
+                  : item,
+              ),
+            );
+            setViewing(null);
+          }}
+        />
+      )}
     </section>
   );
 }
@@ -245,12 +265,19 @@ function GroupDetail({ group, onToggleActive }: { group: Group; onToggleActive: 
 function ProgressCell({ entry, onOpen }: { entry: StudentProgress | undefined; onOpen: () => void }) {
   if (!entry) return <span className="text-text-3">·</span>;
   if (entry.status === 'correct') return <span className="text-neon-ok" title={`${entry.attempts} intentos`}>✓</span>;
-  if (entry.status === 'submitted')
+  if (entry.status === 'submitted') {
+    const look =
+      entry.review === 'aprobado'
+        ? { symbol: '✓', color: 'text-neon-ok', title: 'Aprobado (clic para ver)' }
+        : entry.review === 'por_mejorar'
+          ? { symbol: '↺', color: 'text-amber', title: 'Por mejorar (clic para ver)' }
+          : { symbol: '●', color: 'text-cyan', title: 'Pendiente de revisión (clic para revisar)' };
     return (
-      <button type="button" onClick={onOpen} className="rounded px-1.5 text-cyan hover:bg-cyan/15" title="Leer respuesta">
-        ●
+      <button type="button" onClick={onOpen} className={`rounded px-1.5 hover:bg-cyan/15 ${look.color}`} title={look.title}>
+        {look.symbol}
       </button>
     );
+  }
   return (
     <span className="font-mono text-xs text-coral-l" title={`${entry.attempts} intentos`}>
       ✗{entry.attempts}
@@ -258,8 +285,29 @@ function ProgressCell({ entry, onOpen }: { entry: StudentProgress | undefined; o
   );
 }
 
-function AnswerPanel({ student, exercise, onClose }: { student: Student; exercise: Exercise; onClose: () => void }) {
+function AnswerPanel({
+  student,
+  exercise,
+  onClose,
+  onReviewed,
+}: {
+  student: Student;
+  exercise: Exercise;
+  onClose: () => void;
+  onReviewed: (review: 'aprobado' | 'por_mejorar', comment: string | null) => void;
+}) {
   const entry = student.progress[exercise.id];
+  const [comment, setComment] = useState(entry?.reviewComment ?? '');
+  const [error, setError] = useState('');
+
+  const review = async (decision: 'aprobado' | 'por_mejorar') => {
+    try {
+      await api('/api/reviews', { method: 'PUT', body: { studentId: student.id, exerciseId: exercise.id, review: decision, comment: comment.trim() || null } });
+      onReviewed(decision, comment.trim() || null);
+    } catch (caught) {
+      setError((caught as Error).message);
+    }
+  };
   return (
     <div className="card flex flex-col gap-3 border border-cyan/40 p-5" role="dialog" aria-label={`Respuesta de ${student.fullName}`}>
       <div className="flex items-start justify-between gap-3">
@@ -275,10 +323,38 @@ function AnswerPanel({ student, exercise, onClose }: { student: Student; exercis
       <p className="rounded-lg bg-bg-code p-4 text-sm whitespace-pre-line">{entry?.answer ?? '(sin respuesta)'}</p>
       {exercise.tipo === 'abierta' && (
         <details className="text-sm text-text-2">
-          <summary className="cursor-pointer text-cyan">Ver respuesta de referencia</summary>
+          <summary className="cursor-pointer text-cyan">Ver rúbrica y respuesta de referencia</summary>
+          <ul className="mt-2 list-disc pl-5">
+            {exercise.rubrica.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
           <p className="mt-2 whitespace-pre-line">{exercise.referencia.trim()}</p>
         </details>
       )}
+      <label className="flex flex-col gap-1.5 text-sm">
+        <span className="text-text-2">Comentario para el estudiante (opcional)</span>
+        <textarea
+          value={comment}
+          onChange={(event) => setComment(event.target.value)}
+          rows={2}
+          className="rounded-lg border border-line bg-bg-elev px-3 py-2 outline-none focus:border-cyan"
+        />
+      </label>
+      {error && <p className="text-sm text-coral-l">{error}</p>}
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => void review('aprobado')} className="btn-primary px-4 py-2 text-sm">
+          <Check aria-hidden className="size-4" /> Aprobar
+        </button>
+        <button
+          type="button"
+          onClick={() => void review('por_mejorar')}
+          className="flex items-center gap-2 rounded-lg border border-amber/50 px-4 py-2 text-sm font-semibold text-amber transition hover:bg-amber/10"
+        >
+          ↺ Por mejorar
+        </button>
+        {entry?.review && <span className="self-center text-xs text-text-3">Estado actual: {entry.review === 'aprobado' ? 'aprobado' : 'por mejorar'}</span>}
+      </div>
     </div>
   );
 }

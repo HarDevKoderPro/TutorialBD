@@ -15,12 +15,29 @@ export interface User {
   groupName: string | null;
 }
 
+export type Review = 'aprobado' | 'por_mejorar';
+
 export interface ProgressEntry {
   status: ProgressStatus;
   attempts: number;
   answer: string | null;
+  review: Review | null;
+  reviewComment: string | null;
   updatedAt: string;
 }
+
+function toProgress(row: RowDataPacket): ProgressEntry {
+  return {
+    status: row.status as ProgressStatus,
+    attempts: Number(row.attempts),
+    answer: row.answer ?? null,
+    review: (row.review ?? null) as Review | null,
+    reviewComment: row.review_comment ?? null,
+    updatedAt: String(row.updated_at),
+  };
+}
+
+const PROGRESS_COLUMNS = 'exercise_id, status, attempts, answer, review, review_comment, updated_at';
 
 export const SESSION_DAYS = 30;
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -155,7 +172,7 @@ export class Store {
       [groupId],
     );
     const [progress] = await this.pool.query<RowDataPacket[]>(
-      `SELECT p.user_id, p.exercise_id, p.status, p.attempts, p.answer, p.updated_at
+      `SELECT p.user_id, p.exercise_id, p.status, p.attempts, p.answer, p.review, p.review_comment, p.updated_at
        FROM exercise_progress p JOIN users u ON u.id = p.user_id
        WHERE u.group_id = ? AND u.role = 'estudiante'`,
       [groupId],
@@ -169,36 +186,45 @@ export class Store {
       progress: Object.fromEntries(
         progress
           .filter((row) => Number(row.user_id) === Number(student.id))
-          .map((row) => [
-            String(row.exercise_id),
-            { status: row.status as ProgressStatus, attempts: Number(row.attempts), answer: row.answer ?? null, updatedAt: String(row.updated_at) },
-          ]),
+          .map((row) => [String(row.exercise_id), toProgress(row)]),
       ),
     }));
+  }
+
+  // Revisión del docente: solo sobre estudiantes de sus propios grupos y respuestas entregadas
+  async reviewAnswer(teacherId: number, studentId: number, exerciseId: string, review: Review, comment: string | null): Promise<boolean> {
+    const [result] = await this.pool.query<ResultSetHeader>(
+      `UPDATE exercise_progress p
+       JOIN users u ON u.id = p.user_id
+       JOIN course_groups g ON g.id = u.group_id
+       SET p.review = ?, p.review_comment = ?, p.reviewed_at = NOW(), p.updated_at = p.updated_at
+       WHERE p.user_id = ? AND p.exercise_id = ? AND p.status = 'submitted' AND g.teacher_id = ?`,
+      [review, comment, studentId, exerciseId, teacherId],
+    );
+    return result.affectedRows > 0;
   }
 
   // ---------- progreso ----------
 
   async progressFor(userId: number): Promise<Record<string, ProgressEntry>> {
     const [rows] = await this.pool.query<RowDataPacket[]>(
-      'SELECT exercise_id, status, attempts, answer, updated_at FROM exercise_progress WHERE user_id = ?',
+      `SELECT ${PROGRESS_COLUMNS} FROM exercise_progress WHERE user_id = ?`,
       [userId],
     );
-    return Object.fromEntries(
-      rows.map((row) => [
-        String(row.exercise_id),
-        { status: row.status as ProgressStatus, attempts: Number(row.attempts), answer: row.answer ?? null, updatedAt: String(row.updated_at) },
-      ]),
-    );
+    return Object.fromEntries(rows.map((row) => [String(row.exercise_id), toProgress(row)]));
   }
 
-  // Un ejercicio ya correcto no vuelve a "intentado"; los intentos nunca bajan
+  // Un ejercicio ya correcto no vuelve a "intentado"; los intentos nunca bajan.
+  // Si cambia la respuesta abierta, la revisión del docente vuelve a quedar pendiente
+  // (en ON DUPLICATE KEY UPDATE las asignaciones se evalúan en orden: se revisa antes de cambiar answer).
   async saveProgress(userId: number, exerciseId: string, entry: { status: ProgressStatus; attempts: number; answer: string | null }): Promise<void> {
     await this.pool.query(
       `INSERT INTO exercise_progress (user_id, exercise_id, status, attempts, answer) VALUES (?, ?, ?, ?, ?) AS incoming
        ON DUPLICATE KEY UPDATE
          status = IF(exercise_progress.status = 'correct' AND incoming.status = 'attempted', exercise_progress.status, incoming.status),
          attempts = GREATEST(exercise_progress.attempts, incoming.attempts),
+         review = IF(incoming.answer IS NOT NULL AND NOT (incoming.answer <=> exercise_progress.answer), NULL, exercise_progress.review),
+         review_comment = IF(exercise_progress.review IS NULL, NULL, exercise_progress.review_comment),
          answer = COALESCE(incoming.answer, exercise_progress.answer)`,
       [userId, exerciseId, entry.status, entry.attempts, entry.answer],
     );

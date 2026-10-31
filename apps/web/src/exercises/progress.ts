@@ -8,6 +8,8 @@ export interface ExerciseProgress {
   status: 'attempted' | 'correct' | 'submitted';
   attempts: number;
   answer?: string | null;
+  review?: 'aprobado' | 'por_mejorar' | null;
+  reviewComment?: string | null;
 }
 
 type ProgressMap = Record<string, ExerciseProgress>;

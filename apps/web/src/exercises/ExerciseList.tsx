@@ -1,8 +1,8 @@
-import { Fragment, type ReactNode, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useState } from 'react';
 import { Check, Eye, Lightbulb, Send, X } from 'lucide-react';
 import { useParams } from 'react-router';
 import { isAccepted, MAX_ATTEMPTS_BEFORE_SOLUTION } from './grading';
-import { useAllProgress, useExerciseProgress } from './progress';
+import { loadProgress, useAllProgress, useExerciseProgress } from './progress';
 import { exercisesFor } from './catalog';
 import type { Exercise, ExerciseLevel } from './schema';
 
@@ -16,6 +16,10 @@ export function ExerciseList() {
   const { slug = '' } = useParams();
   const exercises = exercisesFor(slug);
   const progress = useAllProgress();
+  // Al abrir la lección se trae el avance más reciente (por ejemplo, la revisión del docente)
+  useEffect(() => {
+    void loadProgress();
+  }, []);
   const done = exercises.filter((exercise) => ['correct', 'submitted'].includes(progress[exercise.id]?.status ?? '')).length;
 
   if (exercises.length === 0) return null;
@@ -48,7 +52,7 @@ function ExerciseCard({ exercise }: { exercise: Exercise }) {
         <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${level.badge}`}>{level.label}</span>
         <span className="font-mono text-sm text-text-3">{exercise.id}</span>
         {progress?.status === 'correct' && <span className="ml-auto text-sm font-semibold text-neon-ok">✓ PASA</span>}
-        {progress?.status === 'submitted' && <span className="ml-auto text-sm font-semibold text-cyan-l">✓ Entregado</span>}
+        {progress?.status === 'submitted' && <ReviewBadge review={progress.review ?? null} />}
       </header>
 
       <p className="text-xs font-semibold tracking-[0.18em] text-text-3 uppercase">Objetivo · {exercise.objetivo}</p>
@@ -322,11 +326,28 @@ function OpenExercise({ exercise }: { exercise: Extract<Exercise, { tipo: 'abier
       <button
         type="button"
         disabled={!text.trim()}
-        onClick={() => update((current) => ({ ...current, status: 'submitted', attempts: current.attempts + 1, answer: text }))}
+        onClick={() =>
+          update((current) => ({
+            ...current,
+            status: 'submitted',
+            attempts: current.attempts + 1,
+            answer: text,
+            // Una respuesta nueva vuelve a quedar pendiente de revisión
+            ...(text !== current.answer ? { review: null, reviewComment: null } : {}),
+          }))
+        }
         className="btn-primary w-fit px-4 py-2 text-sm disabled:opacity-40"
       >
         <Send aria-hidden className="size-4" /> {submitted ? 'Actualizar respuesta' : 'Entregar'}
       </button>
+      {submitted && progress?.review && (
+        <div className={`rounded-xl border p-4 text-sm ${progress.review === 'aprobado' ? 'border-green/40 bg-green/5' : 'border-amber/40 bg-amber/5'}`}>
+          <p className={`font-semibold ${progress.review === 'aprobado' ? 'text-neon-ok' : 'text-amber'}`}>
+            {progress.review === 'aprobado' ? '✓ Tu docente aprobó esta respuesta' : 'Tu docente te pide mejorar esta respuesta'}
+          </p>
+          {progress.reviewComment && <p className="mt-1 text-text-2">«{progress.reviewComment}»</p>}
+        </div>
+      )}
       {submitted && (
         <div className="grid gap-4 rounded-xl border border-cyan/25 bg-cyan/5 p-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
@@ -347,6 +368,12 @@ function OpenExercise({ exercise }: { exercise: Extract<Exercise, { tipo: 'abier
       )}
     </>
   );
+}
+
+function ReviewBadge({ review }: { review: 'aprobado' | 'por_mejorar' | null }) {
+  if (review === 'aprobado') return <span className="ml-auto text-sm font-semibold text-neon-ok">✓ Aprobado</span>;
+  if (review === 'por_mejorar') return <span className="ml-auto text-sm font-semibold text-amber">↺ Por mejorar</span>;
+  return <span className="ml-auto text-sm font-semibold text-cyan-l">● Entregado · pendiente de revisión</span>;
 }
 
 function Feedback({ correct, wrong = '✗ Revisa las respuestas marcadas en rojo e inténtalo de nuevo.' }: { correct: boolean; wrong?: string }) {

@@ -45,6 +45,16 @@ export const MIGRATIONS: { id: number; name: string; statements: string[] }[] = 
       )`,
     ],
   },
+  {
+    id: 2,
+    name: 'revisión del docente en ejercicios abiertos',
+    statements: [
+      `ALTER TABLE exercise_progress
+        ADD COLUMN review ENUM('aprobado', 'por_mejorar') NULL AFTER answer,
+        ADD COLUMN review_comment TEXT NULL AFTER review,
+        ADD COLUMN reviewed_at DATETIME NULL AFTER review_comment`,
+    ],
+  },
 ];
 
 export async function migrate(pool: Pool, log: (message: string) => void = () => undefined): Promise<void> {
