@@ -29,6 +29,9 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
       fontSize: 14,
       lineHeight: 1.25,
       cursorBlink: true,
+      cursorStyle: 'bar',
+      cursorWidth: 2,
+      cursorInactiveStyle: 'none',
       scrollback: 3000,
       theme: {
         background: '#050915',
@@ -100,7 +103,10 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
             )}
           </div>
         </div>
-        <div ref={container} className="px-3 py-2" style={{ height }} />
+        {/* El margen va en el contenedor externo: FitAddon mide el alto del interno sin padding */}
+        <div className="px-3 py-2">
+          <div ref={container} style={{ height }} />
+        </div>
       </div>
 
       {explanation && (
