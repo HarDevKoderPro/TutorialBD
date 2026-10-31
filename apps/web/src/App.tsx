@@ -42,7 +42,7 @@ export function App() {
       </main>
 
       <footer className="flex flex-wrap justify-between gap-2 border-t border-white/10 pt-4 font-mono text-xs text-text-3">
-        <span>SENA · Formación en desarrollo de software</span>
+        <span>SQL desde cero · Aprende bases de datos en el navegador</span>
         <span title={__APP_BUILD_DATE__}>
           versión {__APP_COMMIT__} · {formatDate(__APP_BUILD_DATE__)}
         </span>

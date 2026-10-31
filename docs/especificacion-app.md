@@ -1,6 +1,6 @@
 # Especificación funcional · App «SQL desde cero»
 
-App web para enseñar bases de datos SQL a aprendices del SENA orientados a desarrollo de software: lecciones interactivas por tema, consola MySQL realista, ejercicios con validación automática y un proyecto final CRUD guiado.
+App web propia y de uso general para enseñar bases de datos SQL a personas orientadas a desarrollo de software: lecciones interactivas por tema, consola MySQL realista, ejercicios con validación automática y un proyecto final CRUD guiado.
 
 ## 1. Roles
 | Rol | Puede |

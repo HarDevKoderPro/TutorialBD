@@ -1,6 +1,6 @@
 # SQL desde cero · App interactiva para enseñar bases de datos
 
-App web para que un instructor del SENA enseñe bases de datos SQL a aprendices orientados a desarrollo de software. Incluye lecciones interactivas por tema, una **consola MySQL realista en el navegador**, ejercicios con validación automática y un **proyecto final CRUD** guiado (diseño → BD → API → frontend).
+App web propia, de uso general, para enseñar bases de datos SQL a personas orientadas a desarrollo de software. Incluye lecciones interactivas por tema, una **consola MySQL realista en el navegador**, ejercicios con validación automática y un **proyecto final CRUD** guiado (diseño → BD → API → frontend).
 
 ## Lee primero
 - @docs/memoria.md — decisiones, estado y acuerdos con el instructor (léelo siempre y mantenlo al día)

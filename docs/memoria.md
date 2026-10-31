@@ -12,6 +12,7 @@ Registro vivo de decisiones, estado y acuerdos con el instructor. **Claude Code 
 - 2026-10-30 · Metodología: predice → ejecuta → explica, errores provocados, script acumulativo, ejercicios en 3 niveles.
 - 2026-10-30 · El contenido se construye **tema por tema y el instructor aprueba cada uno** antes de continuar.
 - 2026-10-30 · Requisito: los aprendices **no instalan nada**; todo desde el navegador.
+- 2026-10-31 · **La app es un producto propio y de uso general, sin vínculo con el SENA**: no se menciona el SENA en la interfaz ni en el contenido · Decisión del autor. Pendiente: confirmar si se conserva el vocabulario instructor/aprendiz/ficha o se pasa a términos genéricos.
 - 2026-10-30 · La app debe incluir una **consola para practicar SQL como en un entorno real** y terminar con un **proyecto CRUD completo** desde el diseño hasta el frontend.
 
 ## Estado del contenido

@@ -2,7 +2,7 @@
   "name": "tutorialbd",
   "private": true,
   "type": "module",
-  "description": "SQL desde cero · App interactiva para enseñar bases de datos (SENA)",
+  "description": "SQL desde cero · App interactiva para enseñar bases de datos",
   "workspaces": [
     "apps/api",
     "apps/web"
