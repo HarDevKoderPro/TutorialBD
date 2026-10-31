@@ -3,17 +3,10 @@ import { Check, Eye, Lightbulb, Send, X } from 'lucide-react';
 import { useParams } from 'react-router';
 import { isAccepted, MAX_ATTEMPTS_BEFORE_SOLUTION } from './grading';
 import { useAllProgress, useExerciseProgress } from './progress';
-import { type Exercise, exerciseFileSchema, type ExerciseLevel } from './schema';
+import { exercisesFor } from './catalog';
+import type { Exercise, ExerciseLevel } from './schema';
 
-// Los ejercicios viven en content/temas/<slug>/ejercicios.yaml
-const files = import.meta.glob<{ default: unknown }>('../../../../content/temas/*/ejercicios.yaml', { eager: true });
-
-function exercisesFor(slug: string): Exercise[] {
-  const file = files[`../../../../content/temas/${slug}/ejercicios.yaml`];
-  return file ? exerciseFileSchema.parse(file.default).ejercicios : [];
-}
-
-const LEVELS: Record<ExerciseLevel, { label: string; badge: string; border: string }> = {
+export const LEVELS: Record<ExerciseLevel, { label: string; badge: string; border: string }> = {
   basico: { label: 'Básico', badge: 'border-green/45 text-green-l', border: 'border-green/25' },
   intermedio: { label: 'Intermedio', badge: 'border-amber/45 text-amber-l', border: 'border-amber/25' },
   avanzado: { label: 'Avanzado', badge: 'border-pink/45 text-pink-l', border: 'border-pink/25' },
@@ -40,7 +33,7 @@ export function ExerciseList() {
       {exercises.map((exercise) => (
         <ExerciseCard key={exercise.id} exercise={exercise} />
       ))}
-      <p className="max-w-3xl text-xs text-text-3">Tu avance se guarda en este navegador.</p>
+      <p className="max-w-3xl text-xs text-text-3">Tu avance se guarda en tu cuenta: tu docente lo ve en su panel.</p>
     </div>
   );
 }

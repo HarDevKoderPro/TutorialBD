@@ -13,7 +13,6 @@ export interface ConsoleCallbacks {
 const PROMPT = 'mysql> ';
 const ESC = '\x1b';
 const HISTORY_KEY = 'sql-desde-cero:historial';
-const SESSION_KEY = 'sql-desde-cero:sesion';
 const MAX_HISTORY = 200;
 
 const color = {
@@ -31,16 +30,6 @@ const HELP = [
   'Termina cada instrucción con ; (o \\G para ver los resultados en vertical).',
   'Atajos: ↑/↓ historial · Ctrl+C cancela · Ctrl+L limpia la pantalla.',
 ];
-
-// Identificador anónimo de este navegador: define el sandbox del estudiante
-export function getSessionKey(): string {
-  let key = localStorage.getItem(SESSION_KEY);
-  if (!key) {
-    key = crypto.randomUUID();
-    localStorage.setItem(SESSION_KEY, key);
-  }
-  return key;
-}
 
 // Emula el cliente mysql en una terminal xterm.js: edición de línea, historial,
 // sentencias de varias líneas y ejecución una por una a través del WebSocket.
@@ -75,7 +64,7 @@ export class ConsoleController {
     this.setStatus('connecting');
     this.term.writeln(color.dim('Conectando con el servidor MySQL…'));
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${location.host}/ws/console?session=${getSessionKey()}`);
+    const socket = new WebSocket(`${protocol}//${location.host}/ws/console`);
     this.socket = socket;
     socket.onmessage = (event) => this.onMessage(JSON.parse(String(event.data)) as ServerMessage);
     socket.onclose = () => {
@@ -84,7 +73,9 @@ export class ConsoleController {
       this.pending = [];
       this.input = '';
       this.term.writeln('');
-      this.term.writeln(color.notice('Conexión cerrada. Usa «Reconectar» para continuar.'));
+      this.term.writeln(
+        color.notice(this.status === 'connecting' ? 'No se pudo abrir la consola. Recarga la página o vuelve a ingresar.' : 'Conexión cerrada. Usa «Reconectar» para continuar.'),
+      );
       this.setStatus('closed');
     };
   }

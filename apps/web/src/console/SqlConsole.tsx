@@ -26,7 +26,7 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
     if (!container.current) return;
     const term = new Terminal({
       fontFamily: "Consolas, 'JetBrains Mono Variable', 'JetBrains Mono', monospace",
-      fontSize: 14,
+      fontSize: document.documentElement.classList.contains('projection') ? 18 : 14,
       lineHeight: 1.25,
       cursorBlink: true,
       cursorStyle: 'bar',
@@ -48,6 +48,12 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
 
     const resize = new ResizeObserver(() => fit.fit());
     resize.observe(container.current);
+    // Modo proyección: letra más grande en la terminal
+    const projection = new MutationObserver(() => {
+      term.options.fontSize = document.documentElement.classList.contains('projection') ? 18 : 14;
+      fit.fit();
+    });
+    projection.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     const instance = new ConsoleController(term, { onStatus: setStatus, onError: setErrorCode });
     instance.connect();
@@ -57,6 +63,7 @@ export function SqlConsole({ height = 420 }: { height?: number }) {
     return () => {
       unregister?.();
       resize.disconnect();
+      projection.disconnect();
       instance.dispose();
       controllerRef.current = null;
       term.dispose();

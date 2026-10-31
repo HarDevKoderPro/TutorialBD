@@ -53,6 +53,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Modo proyección: todo un 25 % más grande (el tamaño de la consola se ajusta en SqlConsole) */
+html.projection {
+  font-size: 125%;
+}
+
 h1 {
   color: var(--color-cyan-l);
 }
