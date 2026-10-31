@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 // Configuración leída de variables de entorno (ver .env.example en la raíz)
 
 export interface DbConfig {
@@ -15,6 +17,8 @@ export interface Config {
   buildDate: string;
   // Secreto para derivar el usuario y la contraseña de cada sandbox
   sessionSecret: string;
+  // Carpeta content/ del repositorio (tareas calificables)
+  contentDir: string;
   appDb: DbConfig;
   sandboxDb: DbConfig;
 }
@@ -34,6 +38,7 @@ export function loadConfig(): Config {
     commit: process.env.GIT_COMMIT ?? 'dev',
     buildDate: process.env.BUILD_DATE ?? new Date().toISOString(),
     sessionSecret: required('SBX_SESSION_SECRET'),
+    contentDir: process.env.CONTENT_DIR ?? resolve(process.cwd(), '../../content'),
     appDb: {
       host: process.env.APP_DB_HOST ?? 'mysql-app',
       port: Number(process.env.APP_DB_PORT ?? 3306),

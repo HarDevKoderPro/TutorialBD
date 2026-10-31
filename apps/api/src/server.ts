@@ -3,7 +3,10 @@ import { loadConfig } from './config.js';
 import { SandboxManager } from './console/sandbox.js';
 import { createPool, ping } from './db.js';
 import { migrate } from './db/migrations.js';
+import { GradesStore } from './db/gradesStore.js';
 import { Store } from './db/store.js';
+import { createAiGrader } from './tasks/aiGrader.js';
+import { loadTasks } from './tasks/content.js';
 
 const config = loadConfig();
 const appPool = createPool(config.appDb, 10);
@@ -11,6 +14,10 @@ const appPool = createPool(config.appDb, 10);
 const sandboxAdminPool = createPool(config.sandboxDb, 4);
 
 await migrate(appPool, (message) => console.log(message));
+
+const catalog = loadTasks(config.contentDir);
+const aiGrader = createAiGrader(process.env.ANTHROPIC_API_KEY);
+console.log(`Tareas cargadas: ${catalog.all.length} · calificación con IA: ${aiGrader ? 'activa' : 'inactiva (falta ANTHROPIC_API_KEY)'}`);
 
 const app = await buildApp({
   commit: config.commit,
@@ -22,6 +29,7 @@ const app = await buildApp({
     return { app: appStatus, sandbox: sandboxStatus };
   },
   store: new Store(appPool),
+  tasks: { catalog, grades: new GradesStore(appPool), aiGrader },
   console: {
     manager: new SandboxManager(sandboxAdminPool, config.sandboxDb),
     secret: config.sessionSecret,

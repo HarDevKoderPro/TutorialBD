@@ -5,6 +5,7 @@ import { type ConsoleDeps, registerConsole } from './console/routes.js';
 import type { Store } from './db/store.js';
 import { registerGroups } from './groups/routes.js';
 import { registerProgress } from './progress/routes.js';
+import { registerTasks, type TasksDeps } from './tasks/routes.js';
 
 export type ServiceStatus = 'ok' | 'error';
 
@@ -15,6 +16,7 @@ export interface AppDeps {
   checkDatabases: () => Promise<{ app: ServiceStatus; sandbox: ServiceStatus }>;
   store?: Store;
   console?: ConsoleDeps;
+  tasks?: TasksDeps;
   secureCookies?: boolean;
   logger?: boolean;
 }
@@ -41,6 +43,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     await registerAuth(app, deps.store, deps.secureCookies ?? false);
     registerProgress(app, deps.store);
     registerGroups(app, deps.store);
+    if (deps.tasks) registerTasks(app, deps.tasks);
   }
   if (deps.console) await registerConsole(app, deps.console);
 

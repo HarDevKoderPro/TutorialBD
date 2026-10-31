@@ -16,6 +16,8 @@ COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 RUN npm ci -w apps/api --omit=dev && npm cache clean --force
 COPY --from=build /app/apps/api/dist apps/api/dist
+# Tareas calificables (las lee solo la API)
+COPY content content
 
 ARG GIT_COMMIT=dev
 ARG BUILD_DATE=

@@ -44,6 +44,7 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - 2026-10-31 · **Contenido en MDX con componentes en español**: las lecciones (`content/temas/*/leccion.mdx`) usan etiquetas como `<Seccion>`, `<AnatomiaTabla>`, `<DiagramaClaves>` que la app mapea a sus componentes (`apps/web/src/lesson/mdxComponents.tsx`); los datos de cada diagrama van como props en el MDX. La ruta vive en `content/ruta.yaml` y se valida con zod · Contenido editable sin tocar código.
 - 2026-10-31 · **Consola v0 con sesión anónima por navegador**: un UUID en localStorage deriva (con `SBX_SESSION_SECRET`) el usuario MySQL `u_<id>` y la base `sbx_<id>_practica`; el estudiante solo tiene privilegios de datos/DDL sobre esa base. Al llegar el ingreso por grupo (1.4) el sandbox se asociará al estudiante · Permite usar la consola desde ya sin cuentas.
 - 2026-10-31 · **Cuentas y grupos**: el docente se crea por CLI en el VPS; crea grupos con código de 6 caracteres; el estudiante se registra con código, nombre, usuario y contraseña (sin correo ni documento: datos mínimos). Contraseñas con scrypt (incluido en Node, sin dependencias nativas; equivalente a argon2/bcrypt). Sesión con cookie httpOnly de 30 días. Toda la app (salvo /ingresar) requiere sesión. El sandbox de la consola pasa a ser de la cuenta (`user:<id>`), no del navegador · Spec §1 y criterio de la Fase 1.
+- 2026-10-31 · **Tareas calificables** (pedido del docente): los ejercicios de cada tema quedan como **ejemplos sin nota** (con pistas y solución) y se agregan **ejercicios propuestos calificables** en `content/temas/<slug>/tareas.yaml` (IDs `T<n>-P<nivel><n>`). Nota 0,0–5,0; **dos entregas por tarea, cuenta la mejor**; la solución aparece al agotar las entregas. Respuesta corta: proporción de aciertos × 5 con justificación automática. Abiertas: **calificadas por IA** (Claude `claude-opus-5-5`, salida estructurada con rúbrica, `fallbacks: default`), visibles al instante; el docente puede ajustar nota y comentario. Las respuestas solo las lee la API. **Definitiva = promedio de las tareas calificadas** (se recalcula con cada entrega). **Asistencia** por día (presente/tarde/ausente/excusa), se muestra en %, no afecta la nota. Imagen PNG de la tabla de notas con comentario por estudiante y botón para compartir por WhatsApp (menú de compartir del sistema o descarga + WhatsApp Web) · Decisiones del docente del 2026-10-31.
 - 2026-10-31 · React Router 7 (no 8: exige React 19).
 - 2026-10-31 · Versiones: React 18.3, Vite 8, Tailwind 4, TypeScript 6.0 (no 7: typescript-eslint aún no lo soporta), Fastify 5, mysql2 3, Vitest 5, Node 22. Fuentes Inter y JetBrains Mono autoalojadas (`@fontsource`), sin CDN externo.
 
@@ -53,10 +54,13 @@ Registro vivo de decisiones, estado y acuerdos con el docente. **Claude Code deb
 - Tema 1: el primer script no tiene `USE` (daría 1046) y su `clientes` difiere de la de TecnoTienda. Resuelto por diseño: la consola del Tema 1 abre en la base `practica`.
 
 ## Contenido redactado por Claude (pendiente de aprobación del docente)
+- Tema 1, `tareas.yaml`: las 5 tareas calificables (T1-PB1 a T1-PA1), sus rúbricas y respuestas de referencia.
 - Tema 1, `ejercicios.yaml`: pistas de T1-B1, T1-B2 y T1-I2; respuesta de referencia de ejemplo de T1-I1 (el temario no la trae); primera frase de la referencia de T1-A1 (qué se repite y por qué es un problema); rúbricas de T1-I1 y T1-A1.
 - `content/errores.yaml`: explicaciones de los 20 errores del catálogo.
 
 ## Pendientes / preguntas abiertas
+- **Repositorio público**: `tareas.yaml` (con respuestas) queda visible en GitHub. Recomendado: pasar el repo a privado y dar al VPS una llave de solo lectura.
+- Configurar `ANTHROPIC_API_KEY` en `/opt/apps/tutorialbd/.env` (sin ella, las tareas abiertas quedan pendientes para el docente).
 - Aislamiento de la consola: mapeo de nombres vs. contenedor por estudiante (Etapa 3).
 - Repositorio `HarDevKoderPro/TutorialBD` es público: decidir si pasa a privado antes de subir `proyecto-final/referencia`.
 - ¿Ambiente de pruebas separado (`sql-dev.smarteksoft.com`)?

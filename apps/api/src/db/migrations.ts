@@ -55,6 +55,53 @@ export const MIGRATIONS: { id: number; name: string; statements: string[] }[] = 
         ADD COLUMN reviewed_at DATETIME NULL AFTER review_comment`,
     ],
   },
+  {
+    id: 3,
+    name: 'tareas calificables, ajustes de nota y asistencia',
+    statements: [
+      `CREATE TABLE task_submissions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        task_id VARCHAR(20) NOT NULL,
+        attempt TINYINT NOT NULL,
+        answer JSON NOT NULL,
+        grade DECIMAL(2,1) NULL,
+        justification TEXT NULL,
+        criteria JSON NULL,
+        graded_by ENUM('auto', 'ia', 'pendiente') NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_submission_attempt (user_id, task_id, attempt),
+        CONSTRAINT chk_submission_grade CHECK (grade BETWEEN 0 AND 5),
+        CONSTRAINT fk_submissions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )`,
+      `CREATE TABLE task_overrides (
+        user_id INT NOT NULL,
+        task_id VARCHAR(20) NOT NULL,
+        grade DECIMAL(2,1) NOT NULL,
+        comment TEXT NULL,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, task_id),
+        CONSTRAINT chk_override_grade CHECK (grade BETWEEN 0 AND 5),
+        CONSTRAINT fk_overrides_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )`,
+      `CREATE TABLE attendance_sessions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        group_id INT NOT NULL,
+        session_date DATE NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_attendance_day (group_id, session_date),
+        CONSTRAINT fk_attendance_sessions_group FOREIGN KEY (group_id) REFERENCES course_groups (id) ON DELETE CASCADE
+      )`,
+      `CREATE TABLE attendance (
+        session_id INT NOT NULL,
+        user_id INT NOT NULL,
+        status ENUM('presente', 'tarde', 'ausente', 'excusa') NOT NULL,
+        PRIMARY KEY (session_id, user_id),
+        CONSTRAINT fk_attendance_session FOREIGN KEY (session_id) REFERENCES attendance_sessions (id) ON DELETE CASCADE,
+        CONSTRAINT fk_attendance_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )`,
+    ],
+  },
 ];
 
 export async function migrate(pool: Pool, log: (message: string) => void = () => undefined): Promise<void> {

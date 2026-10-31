@@ -35,6 +35,8 @@ services:
       SBX_ADMIN_USER: ${SBX_ADMIN_USER}
       SBX_ADMIN_PASSWORD: ${SBX_ADMIN_PASSWORD}
       SBX_SESSION_SECRET: ${SBX_SESSION_SECRET}
+      # Calificación de respuestas abiertas con IA (opcional)
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       mysql-app: { condition: service_healthy }
       mysql-sbx: { condition: service_healthy }

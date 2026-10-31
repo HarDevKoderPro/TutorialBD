@@ -15,6 +15,7 @@ import {
 } from './blocks';
 import { SqlConsole } from '../console/SqlConsole';
 import { ExerciseList } from '../exercises/ExerciseList';
+import { TaskList } from '../exercises/TaskList';
 import { DataTypes, DbmsFlow, KeysDiagram, TableAnatomy } from './diagrams';
 
 // Nombres en español que usan las lecciones de content/ → componentes de la app
@@ -30,6 +31,7 @@ export const mdxComponents: MDXComponents = {
   Proximamente: ComingSoon,
   Consola: SqlConsole,
   Ejercicios: ExerciseList,
+  Tareas: TaskList,
   FlujoSGBD: DbmsFlow,
   AnatomiaTabla: TableAnatomy,
   TiposDato: DataTypes,

@@ -4,6 +4,8 @@ import { api } from '../api';
 import { availableExercises } from '../exercises/catalog';
 import { LEVELS } from '../exercises/ExerciseList';
 import type { Exercise } from '../exercises/schema';
+import { AttendanceTab } from '../teacher/AttendanceTab';
+import { GradesTab } from '../teacher/GradesTab';
 
 interface Group {
   id: number;
@@ -31,6 +33,13 @@ interface Student {
 }
 
 const REFRESH_MS = 30_000;
+
+type TabId = 'notas' | 'asistencia' | 'avance';
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'notas', label: 'Notas' },
+  { id: 'asistencia', label: 'Asistencia' },
+  { id: 'avance', label: 'Avance en ejemplos' },
+];
 
 // Panel del docente: grupos con su código de ingreso y avance de cada estudiante por ejercicio
 export function TeacherPage() {
@@ -132,6 +141,7 @@ function GroupDetail({ group, onToggleActive }: { group: Group; onToggleActive: 
   const [students, setStudents] = useState<Student[] | null>(null);
   const [copied, setCopied] = useState(false);
   const [viewing, setViewing] = useState<{ student: Student; exercise: Exercise } | null>(null);
+  const [tab, setTab] = useState<TabId>('notas');
   const catalog = availableExercises();
   const allExercises = catalog.flatMap((entry) => entry.exercises);
 
@@ -179,84 +189,106 @@ function GroupDetail({ group, onToggleActive }: { group: Group; onToggleActive: 
         </div>
       </div>
 
-      {students && students.length === 0 && (
-        <p className="text-text-2">
-          Nadie se ha registrado todavía. Los estudiantes entran a la app, eligen «Soy nuevo» y escriben el código{' '}
-          <span className="font-mono text-cyan">{group.joinCode}</span>.
-        </p>
-      )}
+      <div className="flex gap-1 rounded-lg border border-line p-1" role="tablist">
+        {TABS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === item.id}
+            onClick={() => setTab(item.id)}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-semibold transition ${tab === item.id ? 'bg-line text-cyan' : 'text-text-2 hover:text-text'}`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
 
-      {students && students.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border border-line">
-          <table className="w-full text-sm">
-            <thead className="bg-bg-code">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold">Estudiante</th>
-                <th className="px-3 py-3 text-left font-semibold">Avance</th>
-                {allExercises.map((exercise) => (
-                  <th key={exercise.id} className="px-2 py-3 text-center font-mono text-xs font-medium">
-                    <span className={LEVELS[exercise.nivel].badge.split(' ').find((name) => name.startsWith('text-'))}>{exercise.id}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => {
-                const done = allExercises.filter((exercise) => ['correct', 'submitted'].includes(student.progress[exercise.id]?.status ?? '')).length;
-                return (
-                  <tr key={student.id} className="border-t border-line/60">
-                    <td className="px-4 py-3">
-                      <p className="font-semibold">{student.fullName}</p>
-                      <p className="font-mono text-xs text-text-3">{student.username}</p>
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/10">
-                          <div className="h-full rounded-full bg-green" style={{ width: `${allExercises.length ? (done / allExercises.length) * 100 : 0}%` }} />
-                        </div>
-                        <span className="font-mono text-xs text-text-2">
-                          {done}/{allExercises.length}
-                        </span>
-                      </div>
-                    </td>
-                    {allExercises.map((exercise) => (
-                      <td key={exercise.id} className="px-2 py-3 text-center">
-                        <ProgressCell entry={student.progress[exercise.id]} onOpen={() => setViewing({ student, exercise })} />
+      {tab === 'notas' && <GradesTab groupId={group.id} />}
+      {tab === 'asistencia' && <AttendanceTab groupId={group.id} />}
+      {tab === 'avance' && (
+        <>
+          <p className="text-sm text-text-3">Avance en los ejercicios de ejemplo (sin nota). Las tareas calificables están en «Notas».</p>
+        {students && students.length === 0 && (
+          <p className="text-text-2">
+            Nadie se ha registrado todavía. Los estudiantes entran a la app, eligen «Soy nuevo» y escriben el código{' '}
+            <span className="font-mono text-cyan">{group.joinCode}</span>.
+          </p>
+        )}
+
+        {students && students.length > 0 && (
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full text-sm">
+              <thead className="bg-bg-code">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold">Estudiante</th>
+                  <th className="px-3 py-3 text-left font-semibold">Avance</th>
+                  {allExercises.map((exercise) => (
+                    <th key={exercise.id} className="px-2 py-3 text-center font-mono text-xs font-medium">
+                      <span className={LEVELS[exercise.nivel].badge.split(' ').find((name) => name.startsWith('text-'))}>{exercise.id}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) => {
+                  const done = allExercises.filter((exercise) => ['correct', 'submitted'].includes(student.progress[exercise.id]?.status ?? '')).length;
+                  return (
+                    <tr key={student.id} className="border-t border-line/60">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold">{student.fullName}</p>
+                        <p className="font-mono text-xs text-text-3">{student.username}</p>
                       </td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/10">
+                            <div className="h-full rounded-full bg-green" style={{ width: `${allExercises.length ? (done / allExercises.length) * 100 : 0}%` }} />
+                          </div>
+                          <span className="font-mono text-xs text-text-2">
+                            {done}/{allExercises.length}
+                          </span>
+                        </div>
+                      </td>
+                      {allExercises.map((exercise) => (
+                        <td key={exercise.id} className="px-2 py-3 text-center">
+                          <ProgressCell entry={student.progress[exercise.id]} onOpen={() => setViewing({ student, exercise })} />
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <p className="flex flex-wrap gap-4 text-xs text-text-3">
-        <span className="text-neon-ok">✓ correcto</span>
-        <span className="text-cyan">● por revisar (clic)</span>
-        <span className="text-amber">↺ por mejorar</span>
-        <span className="text-coral-l">✗ intentos sin acertar</span>
-        <span>· sin empezar</span>
-      </p>
+        <p className="flex flex-wrap gap-4 text-xs text-text-3">
+          <span className="text-neon-ok">✓ correcto</span>
+          <span className="text-cyan">● por revisar (clic)</span>
+          <span className="text-amber">↺ por mejorar</span>
+          <span className="text-coral-l">✗ intentos sin acertar</span>
+          <span>· sin empezar</span>
+        </p>
 
-      {viewing && (
-        <AnswerPanel
-          key={`${viewing.student.id}-${viewing.exercise.id}`}
-          {...viewing}
-          onClose={() => setViewing(null)}
-          onReviewed={(review, comment) => {
-            const { student, exercise } = viewing;
-            setStudents((list) =>
-              (list ?? []).map((item) =>
-                item.id === student.id
-                  ? { ...item, progress: { ...item.progress, [exercise.id]: { ...item.progress[exercise.id]!, review, reviewComment: comment } } }
-                  : item,
-              ),
-            );
-            setViewing(null);
-          }}
-        />
+        {viewing && (
+          <AnswerPanel
+            key={`${viewing.student.id}-${viewing.exercise.id}`}
+            {...viewing}
+            onClose={() => setViewing(null)}
+            onReviewed={(review, comment) => {
+              const { student, exercise } = viewing;
+              setStudents((list) =>
+                (list ?? []).map((item) =>
+                  item.id === student.id
+                    ? { ...item, progress: { ...item.progress, [exercise.id]: { ...item.progress[exercise.id]!, review, reviewComment: comment } } }
+                    : item,
+                ),
+              );
+              setViewing(null);
+            }}
+          />
+        )}
+        </>
       )}
     </section>
   );

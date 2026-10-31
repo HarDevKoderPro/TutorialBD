@@ -5,7 +5,10 @@ import { buildApp } from './app.js';
 import { hashPassword } from './auth/passwords.js';
 import { createPool } from './db.js';
 import { migrate } from './db/migrations.js';
+import { GradesStore } from './db/gradesStore.js';
 import { Store } from './db/store.js';
+import { fileURLToPath } from 'node:url';
+import { loadTasks } from './tasks/content.js';
 
 // Pruebas contra MySQL real. En CI las activa TEST_DB_HOST (servicio mysql:8.4 de GitHub Actions).
 const host = process.env.TEST_DB_HOST;
@@ -24,14 +27,23 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
       { host: host!, port: Number(process.env.TEST_DB_PORT ?? 3306), user: 'root', password: process.env.TEST_DB_PASSWORD ?? 'root', database: 'aula_test' },
       5,
     );
-    await pool.query('DROP TABLE IF EXISTS exercise_progress, sessions');
+    await pool.query('DROP TABLE IF EXISTS attendance, attendance_sessions, task_overrides, task_submissions, exercise_progress, sessions');
     await pool.query('SET FOREIGN_KEY_CHECKS = 0');
     await pool.query('DROP TABLE IF EXISTS users, course_groups, schema_migrations');
     await pool.query('SET FOREIGN_KEY_CHECKS = 1');
     await migrate(pool);
     await migrate(pool); // idempotente
     store = new Store(pool);
-    app = await buildApp({ commit: 'test', buildDate: '', checkDatabases: async () => ({ app: 'ok', sandbox: 'ok' }), store });
+    // Calificador de IA simulado: no llama a la API real en las pruebas
+    const aiGrader = { grade: async () => ({ grade: 4.2, justification: 'Buen análisis; faltó una FK.', criteria: [] }) };
+    const catalog = loadTasks(fileURLToPath(new URL('../../../content', import.meta.url)));
+    app = await buildApp({
+      commit: 'test',
+      buildDate: '',
+      checkDatabases: async () => ({ app: 'ok', sandbox: 'ok' }),
+      store,
+      tasks: { catalog, grades: new GradesStore(pool), aiGrader },
+    });
     await store.createUser({ username: 'profe', fullName: 'Docente de prueba', role: 'docente', passwordHash: await hashPassword('clave-docente'), groupId: null });
   });
 
@@ -114,6 +126,51 @@ describe.skipIf(!host)('ingreso por grupo, avance y panel docente (MySQL real)',
     // El estudiante no puede revisar
     const forbidden = await app.inject({ method: 'PUT', url: '/api/reviews', headers: { cookie: student }, payload: { studentId, exerciseId: 'T1-I1', review: 'aprobado' } });
     expect(forbidden.statusCode).toBe(403);
+  });
+
+  it('tareas: dos entregas, la mejor cuenta; IA en abiertas; ajuste del docente, asistencia y definitiva', async () => {
+    const teacher = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'profe', password: 'clave-docente' } })).headers['set-cookie']);
+    const student = cookieFrom((await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'laura', password: 'clave-laura' } })).headers['set-cookie']);
+    const studentId = (await app.inject({ method: 'GET', url: '/api/auth/me', headers: { cookie: student } })).json().user.id;
+    const submit = (taskId: string, answer: unknown) =>
+      app.inject({ method: 'POST', url: `/api/tasks/${taskId}/submit`, headers: { cookie: student }, payload: { answer } });
+
+    const list = await app.inject({ method: 'GET', url: '/api/tasks/01-conceptos-basicos', headers: { cookie: student } });
+    expect(list.json().tasks).toHaveLength(5);
+    expect(JSON.stringify(list.json())).not.toContain('aceptadas');
+
+    const first = await submit('T1-PB1', ['productos', 'codigo, nombre, precio', '5', '59900']);
+    expect(first.json().task.attempts[0]).toMatchObject({ grade: 3.8, items: [true, true, false, true] });
+    expect(first.json().task.solution).toBeNull();
+    const second = await submit('T1-PB1', ['productos', 'codigo, nombre, precio', '4', '59900']);
+    expect(second.json().task).toMatchObject({ attemptsLeft: 0, final: { grade: 5 } });
+    expect(second.json().task.solution).toContain('productos');
+    expect((await submit('T1-PB1', ['x', 'x', 'x', 'x'])).statusCode).toBe(409);
+
+    const open = await submit('T1-PI1', 'categoria: id_categoria INT PK, nombre VARCHAR…');
+    expect(open.json().task.attempts[0]).toMatchObject({ grade: 4.2, gradedBy: 'ia' });
+
+    const override = await app.inject({
+      method: 'PUT',
+      url: '/api/grades/override',
+      headers: { cookie: teacher },
+      payload: { studentId, taskId: 'T1-PI1', grade: 3.5, comment: 'Faltó justificar los tipos.' },
+    });
+    expect(override.statusCode).toBe(200);
+
+    const day = { date: '2026-11-03', records: { [studentId]: 'presente' } };
+    expect((await app.inject({ method: 'PUT', url: `/api/groups/${groupId}/attendance`, headers: { cookie: teacher }, payload: day })).statusCode).toBe(200);
+    const attendance = await app.inject({ method: 'GET', url: `/api/groups/${groupId}/attendance?date=2026-11-03`, headers: { cookie: teacher } });
+    expect(attendance.json().records[studentId]).toBe('presente');
+
+    const report = await app.inject({ method: 'GET', url: `/api/groups/${groupId}/grades`, headers: { cookie: teacher } });
+    const row = report.json().students[0];
+    expect(row.grades['T1-PI1']).toMatchObject({ grade: 3.5, source: 'docente' });
+    expect(row.definitive).toBe(4.3);
+    expect(row.attendance).toEqual({ attended: 1, total: 1, percent: 100 });
+
+    // El estudiante no ve el panel de notas ni puede ajustar notas
+    expect((await app.inject({ method: 'GET', url: `/api/groups/${groupId}/grades`, headers: { cookie: student } })).statusCode).toBe(403);
   });
 
   it('un grupo cerrado no admite registros y la contraseña errada no entra', async () => {

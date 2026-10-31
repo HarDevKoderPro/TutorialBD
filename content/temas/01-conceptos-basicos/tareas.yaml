@@ -1,0 +1,102 @@
+# Tarea calificable del Tema 1 (ejercicios propuestos, similares a los de ejemplo).
+# Este archivo solo lo lee la API: las respuestas nunca se envían al navegador.
+# Nota de 0,0 a 5,0. Respuesta corta: proporción de aciertos × 5. Abierta: la califica la IA con la rúbrica.
+# Dos entregas por tarea; cuenta la mejor. La solución se muestra al agotar las entregas.
+tareas:
+  - id: T1-PB1
+    nivel: basico
+    objetivo: "Reconocer los elementos de una tabla."
+    enunciado: "Observa la tabla `productos` y responde."
+    tabla:
+      nombre: productos
+      columnas: [codigo, nombre, precio]
+      filas:
+        - ["P01", "Teclado mecánico RGB", "189900"]
+        - ["P02", "Mouse inalámbrico", "59900"]
+        - ["P03", "Monitor 24\" Full HD", "599000"]
+        - ["P04", "Memoria USB 64 GB", "39900"]
+    tipo: respuestas
+    preguntas:
+      - pregunta: "Nombre de la tabla"
+        aceptadas: ["productos"]
+      - pregunta: "Sus campos (sepáralos con comas)"
+        aceptadas: ["codigo, nombre, precio"]
+        lista: true
+      - pregunta: "¿Cuántos registros tiene?"
+        aceptadas: ["4", "cuatro"]
+      - pregunta: "Valor de precio para el Mouse inalámbrico"
+        aceptadas: ["59900", "59.900", "$59.900"]
+
+  - id: T1-PB2
+    nivel: basico
+    objetivo: "Diferenciar dato e información."
+    enunciado: "Clasifica cada expresión como dato o información."
+    tipo: clasificar
+    opciones: [Dato, Información]
+    items:
+      - texto: "3205551234"
+        respuesta: Dato
+      - texto: "Camila Torres vive en Cali"
+        respuesta: Información
+      - texto: "2026-04-02"
+        respuesta: Dato
+      - texto: "El pedido 4 se pagó y ya fue enviado"
+        respuesta: Información
+      - texto: "Medellín"
+        respuesta: Dato
+
+  - id: T1-PI1
+    nivel: intermedio
+    objetivo: "Diseñar los campos de una tabla."
+    enunciado: "Para **categoría** y **pedido** de TecnoTienda, propone 4–5 campos con su tipo de dato y elige la clave primaria de cada uno."
+    aviso: "Justifica cada tipo de dato."
+    tipo: abierta
+    rubrica:
+      - "Cada tabla tiene entre 4 y 5 campos con sentido para el negocio."
+      - "Cada campo tiene un tipo de dato adecuado (INT, DECIMAL, VARCHAR, DATE, DATETIME, BOOLEAN) y su justificación."
+      - "Cada tabla tiene una clave primaria que no se repite ni cambia."
+    referencia: |
+      Ejemplo de respuesta (hay varias correctas):
+      categoria: id_categoria INT (PK, consecutivo), nombre VARCHAR (texto), descripcion VARCHAR (texto largo), activa BOOLEAN (sí/no).
+      pedido: id_pedido INT (PK, consecutivo), id_cliente INT (número del cliente que compra), fecha DATETIME (fecha y hora de la compra), estado VARCHAR o ENUM (pendiente, pagado, enviado, cancelado), total DECIMAL (dinero con decimales).
+
+  - id: T1-PI2
+    nivel: intermedio
+    objetivo: "Elegir una buena PK."
+    enunciado: "¿Cuál es mejor clave primaria para un producto de TecnoTienda?"
+    aviso: "Piensa: ¿puede repetirse? ¿puede cambiar?"
+    tipo: seleccion
+    opciones: [Nombre del producto, Precio, Número consecutivo (id_producto), Categoría]
+    correcta: Número consecutivo (id_producto)
+    explicacion: "El número consecutivo no se repite ni cambia. Dos productos pueden tener el mismo precio o categoría, y el nombre puede cambiar o repetirse entre marcas."
+
+  - id: T1-PA1
+    nivel: avanzado
+    objetivo: "Preparar el terreno para el DER y la normalización."
+    enunciado: "Reto: ¿qué tablas se esconden aquí? La planilla `inscripciones_gimnasio` tiene todo mezclado en una sola hoja."
+    aviso: "Todavía sin SQL. Resuélvelo en papel o en una hoja de cálculo."
+    tabla:
+      nombre: inscripciones_gimnasio
+      columnas: [socio, tel_socio, clase, horario, instructor]
+      filas:
+        - ["Laura Gómez", "3001234567", "Spinning", "Lun 6:00 p. m.", "Carlos Ruiz"]
+        - ["Andrés Ruiz", "3109876543", "Yoga", "Mar 7:00 a. m.", "Diana López"]
+        - ["Laura Gómez", "3001234567", "Yoga", "Mar 7:00 a. m.", "Diana López"]
+        - ["Camila Torres", "3205551234", "Spinning", "Lun 6:00 p. m.", "Carlos Ruiz"]
+        - ["Andrés Ruiz", "3109876543", "Crossfit", "Jue 8:00 p. m.", "Carlos Ruiz"]
+    preguntas_guia:
+      - "¿Qué datos se repiten y qué problema causa?"
+      - "¿Qué tablas deberían existir?"
+      - "¿Cuál sería la PK de cada una?"
+      - "¿Qué campo las uniría?"
+    tipo: abierta
+    rubrica:
+      - "Identifica los datos repetidos (socio y su teléfono, clase con su horario e instructor) y el problema de corregirlos en varias filas."
+      - "Propone tablas separadas para socios, clases, instructores e inscripciones."
+      - "Elige una PK para cada tabla."
+      - "Identifica las claves foráneas que unen las tablas."
+    referencia: |
+      Se repiten el socio con su teléfono y la clase con su horario e instructor: si Laura cambia de teléfono hay que corregirlo en varias filas, y si se olvida una, los datos se contradicen.
+      Tablas: socios, instructores, clases e inscripciones.
+      PK: id_socio, id_instructor, id_clase, id_inscripcion.
+      Uniones: inscripciones tiene id_socio e id_clase (FK); clases tiene id_instructor (FK).
