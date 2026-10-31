@@ -1,0 +1,6 @@
+fecha_pedido,cliente,documento,telefono,ciudad,productos,categoria,precios,total
+2026-03-01,Laura Gómez,1012345678,3001234567,Bogotá,"Portátil Lenovo IdeaPad 15"", Mouse inalámbrico","Portátiles, Periféricos","2499000, 59900",2558900
+2026-03-04,Andrés Ruiz,1023456789,3109876543,Medellín,"Teclado mecánico RGB, Mouse inalámbrico x2","Periféricos","189900, 59900",309700
+2026-03-20,Laura Gomez,1012345678,300 123 4567,Bogota,SSD 500 GB NVMe x2,Almacenamiento,229900,459800
+2026-04-02,Camila Torres,1034567890,3205551234,Cali,"Portátil HP 14"" Ryzen 5, Monitor 24"" Full HD x2, Memoria USB 64 GB x3","Portátiles, Monitores, Almacenamiento","2199000, 599000, 39900",3516700
+2026-05-21,Andres Ruiz,1023456789,3109876543,Medellin,"Portátil Lenovo IdeaPad 15"", Teclado mecánico RGB","Portátiles, Periféricos","2499000, 189900",2688900
